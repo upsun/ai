@@ -1,0 +1,15 @@
+{
+  "name": "upsun",
+  "displayName": "Upsun",
+  "description": "Comprehensive skill for managing Upsun projects via the Upsun CLI. Covers 130+ commands including deployments, environments, backups, databases, resources, and security.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Upsun Team",
+    "email": "support@upsun.com"
+  },
+  "homepage": "https://github.com/upsun/ai",
+  "repository": "https://github.com/upsun/ai",
+  "license": "MIT",
+  "keywords": ["upsun", "paas", "deployment", "platform"],
+  "skills": "./skills/"
+}

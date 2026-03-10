@@ -36,28 +36,54 @@ This skill enables your agent to help you manage Upsun projects through the Upsu
    upsun auth:browser-login
    ```
 
-2. **Claude Code** - Available at [claude.ai/code](https://claude.ai/code) or any other AI coding agent
+2. **AI coding agent** - Claude Code, Cursor, Codex, or OpenCode
 
-#### Option 1: Plugin Installation (Recommended for Claude)
+#### Claude Code
 
-Install via Claude Code plugin system:
+**Option A: Official Claude Marketplace**
 
 ```bash
-# In Claude Code, run:
-/plugin marketplace add upsun/claude-marketplace
-/plugin install upsun-skill
-
-# Or if using a custom marketplace:
-/plugin marketplace add YOUR_ORG/your-marketplace
-/plugin install upsun-skill@your-marketplace
+/plugin install upsun@claude-plugins-official
 ```
 
-The plugin will automatically:
-- Install the skill and all helper scripts
-- Set up recommended permissions
-- Make the skill available across all your projects
+**Option B: Custom marketplace**
 
-#### Option 2: Personal Skills Directory
+```bash
+/plugin marketplace add upsun/claude-marketplace
+/plugin install upsun@upsun-claude-marketplace
+```
+
+The plugin will automatically install the skill, set up recommended permissions, and make it available across all your projects.
+
+#### Cursor
+
+Install from Cursor marketplace (after publishing at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish)):
+
+```
+/plugin-add upsun
+```
+
+#### Codex
+
+Tell Codex:
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/upsun/ai/refs/heads/main/.codex/INSTALL.md
+```
+
+**Detailed docs:** [docs/README.codex.md](docs/README.codex.md)
+
+#### OpenCode
+
+Tell OpenCode:
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/upsun/ai/refs/heads/main/.opencode/INSTALL.md
+```
+
+**Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)
+
+#### Manual Installation (Personal Skills Directory)
 
 Install for all your projects manually:
 
@@ -65,15 +91,12 @@ Install for all your projects manually:
 # Clone to personal skills directory
 mkdir -p ~/.claude/skills
 cd ~/.claude/skills
-git clone https://github.com/upsun/skills.git upsun
+git clone https://github.com/upsun/ai.git upsun
 
 # Or download and extract
-curl -L https://github.com/upsun/skills/archive/main.zip -o upsun.zip
-unzip upsun.zip -d ~/<AGENT_CONFIG_FOLDER>/skills/
-
-# Move files to the coding agent folder
-
-mv using-upsun ~/<AGENT_CONFIG_FOLDER>/skills/upsun
+curl -L https://github.com/upsun/ai/archive/main.zip -o upsun.zip
+unzip upsun.zip
+cp -r ai-main/skills/using-upsun ~/.claude/skills/upsun
 ```
 
 ### Configure Permissions
@@ -116,6 +139,12 @@ Add Upsun CLI permissions to your Claude Code settings:
 1. Open your AI coding agent in a project or terminal
 2. Ask it: "Can you help me deploy to Upsun?"
 3. It should activate the Upsun skill and offer assistance
+
+**Platform-specific verification:**
+- **Claude Code**: Skill loads via plugin
+- **Cursor**: `/plugin-add upsun` then ask about Upsun
+- **Codex**: `ls -la ~/.agents/skills/upsun` to verify symlink
+- **OpenCode**: Ask "Can you help me deploy to Upsun?" — plugin injects skill context
 
 ## Usage
 
@@ -202,7 +231,7 @@ This project is licensed under the MIT - see the [LICENSE](LICENSE) file for det
 - **Upsun Documentation**: https://docs.upsun.com
 - **Upsun CLI Reference**: https://docs.upsun.com/administration/cli/reference.html
 - **Claude Code Documentation**: https://code.claude.com/docs
-- **Issues**: Please report issues on the GitHub repository
+- **Issues**: https://github.com/upsun/ai/issues
 
 ### Acknowledgments
 

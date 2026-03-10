@@ -1,0 +1,20 @@
+{
+  "name": "upsun-claude-marketplace",
+  "description": "Upsun skills marketplace for Claude Code - comprehensive Upsun CLI management",
+  "owner": {
+    "name": "Upsun Team",
+    "email": "support@upsun.com"
+  },
+  "plugins": [
+    {
+      "name": "upsun",
+      "description": "Comprehensive Claude Code skill for managing Upsun projects via the Upsun CLI. Covers 130+ commands including deployments, environments, backups, databases, resources, and security.",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "Upsun Team",
+        "email": "support@upsun.com"
+      }
+    }
+  ]
+}
