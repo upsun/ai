@@ -38,7 +38,7 @@ deepeval test run test_login.py
 
 Tests use:
 - **DeepEval**: Testing framework for LLM applications
-- **GEval**: Metric for evaluating outputs using Gemini 3.1 Pro
+- **GEval**: Metric for evaluating outputs using Gemini 3.1 Pro (`gemini-3.1-pro-preview`)
 - **Claude Code CLI**: The agent being evaluated
 
 Each test:
