@@ -33,7 +33,6 @@ def test_upsun_login():
   # Create correctness metric
   correctness_metric = GEval(
     name="Correctness",
-    model=GeminiVertexAI(model_name="gemini-3.1-pro-preview"),
     evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
     evaluation_steps=[
       "Check if the actual output correctly identifies that the user is not logged in to Upsun",
