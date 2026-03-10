@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://mcp.upsun.com/mcp",
       "headers": {
-        "upsun-api-token": "YOUR_API_TOKEN",
+        "upsun-api-token": "${UPSUN_API_TOKEN}",
         "enable-write": "false"
       }
     }
