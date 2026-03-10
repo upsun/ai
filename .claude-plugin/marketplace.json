@@ -1,6 +1,6 @@
 {
-  "name": "upsun-claude-marketplace",
-  "description": "Upsun skills marketplace for Claude Code - comprehensive Upsun CLI management",
+  "name": "upsun-marketplace",
+  "description": "Upsun skills marketplace - comprehensive Upsun CLI management",
   "owner": {
     "name": "Upsun Team",
     "email": "support@upsun.com"

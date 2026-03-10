@@ -1,0 +1,19 @@
+{
+  "name": "upsun-marketplace",
+  "owner": {
+    "name": "Upsun Team",
+    "email": "support@upsun.com"
+  },
+  "metadata": {
+    "description": "Upsun skills for AI coding agents - comprehensive Upsun CLI management",
+    "version": "1.0.0",
+    "pluginRoot": "."
+  },
+  "plugins": [
+    {
+      "name": "upsun",
+      "source": "./",
+      "description": "Comprehensive skill for managing Upsun projects via the Upsun CLI. Covers 130+ commands including deployments, environments, backups, databases, resources, and security."
+    }
+  ]
+}
