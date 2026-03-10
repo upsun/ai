@@ -19,7 +19,7 @@ def run_claude_code(prompt):
     'Bash(upsun organization:*)',
   ]
   result = subprocess.run(
-    ['claude', '-p', prompt, '--allowedTools', ','.join(allowed_tools), '--dangerously-skip-permissions'],
+    ['claude', '-p', prompt, '--allowedTools', ','.join(allowed_tools)],
     capture_output=True,
     text=True,
     timeout=3000
