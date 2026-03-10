@@ -63,10 +63,10 @@ jobs:
 
       run: |
         source .venv/bin/activate
-        # deepeval set-gemini \
-        #   --model=gemini-3.1-pro-preview \
-        #   --project=${{ secrets.GCP_PROJECT_ID }} \
-        #   --location=global
+        deepeval set-gemini \
+          --model=gemini-3.1-pro-preview \
+          --project=${{ secrets.GCP_PROJECT_ID }} \
+          --location=global
         deepeval test run . \
           --junitxml=results.xml \
           --html=report.html \
