@@ -1,15 +1,14 @@
 name: Run Evaluations
 
 on:
-  push:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
   run-evals:
     runs-on: ubuntu-latest
-    # Only run on PRs from the same repository, not forks
+    # Only run on PRs from the same repository, not forks.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     
     steps:
@@ -60,14 +59,15 @@ jobs:
         ANTHROPIC_VERTEX_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         ANTHROPIC_VERTEX_REGION: "global"
         ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-4-5"
-        ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-4-5"
-        ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-4-5"
-        CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-4-5"
+        ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-4-6"
+        ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-4-6"
+        CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-4-6"
+        CLAUDE_CODE_USE_VERTEX: "1"
 
       run: |
         source .venv/bin/activate
         deepeval set-gemini \
-          --model=gemini-2.5-pro \
+          --model=gemini-3.1-pro-preview \
           --project=${{ secrets.GCP_PROJECT_ID }} \
           --location=global
         deepeval test run . \

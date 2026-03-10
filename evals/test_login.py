@@ -5,8 +5,21 @@ from deepeval import assert_test
 
 def run_claude_code(prompt):
   """Execute Claude Code CLI and capture output"""
+  allowed_tools = [
+    'mcp__upsun__*',
+    'Bash(upsun auth:*)',
+    'Bash(upsun environment:*)',
+    'Bash(upsun activity:*)',
+    'Bash(upsun backup:*)',
+    'Bash(upsun project:*)',
+    'Bash(upsun logs:*)',
+    'Bash(upsun resources:*)',
+    'Bash(upsun metrics:*)',
+    'Bash(upsun user:*)',
+    'Bash(upsun organization:*)',
+  ]
   result = subprocess.run(
-    ['claude', '-p', prompt],
+    ['claude', '-p', prompt, '--allowedTools', ','.join(allowed_tools), '--dangerously-skip-permissions'],
     capture_output=True,
     text=True,
     timeout=3000
