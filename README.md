@@ -44,12 +44,8 @@ Install via Claude Code plugin system:
 
 ```bash
 # In Claude Code, run:
-/plugin marketplace add upsun/claude-marketplace
+/plugin marketplace add upsun/ai
 /plugin install upsun@upsun
-
-# Or if using a custom marketplace:
-/plugin marketplace add YOUR_ORG/your-marketplace
-/plugin install upsun@your-marketplace
 ```
 
 The plugin will automatically:
