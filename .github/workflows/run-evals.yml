@@ -1,12 +1,15 @@
 name: Run Evaluations
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
   run-evals:
     runs-on: ubuntu-latest
+    # Only run on PRs from the same repository, not forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     
     steps:
     - name: Checkout repository
