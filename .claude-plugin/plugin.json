@@ -1,11 +1,4 @@
 {
   "name": "upsun",
-  "version": "1.0.0",
-  "description": "Comprehensive Claude Code skill for managing Upsun projects via the Upsun CLI. Covers 130+ commands including deployments, environments, backups, databases, resources, and security.",
-  "author": {
-    "name": "Upsun Team",
-    "email": "support@upsun.com"
-  },
-  "repository": "https://github.com/upsun/skills",
-  "skills": "skills"
+  "description": "Claude plugin for Upsun"
 }

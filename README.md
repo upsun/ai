@@ -45,11 +45,11 @@ Install via Claude Code plugin system:
 ```bash
 # In Claude Code, run:
 /plugin marketplace add upsun/claude-marketplace
-/plugin install upsun-skill
+/plugin install upsun@upsun
 
 # Or if using a custom marketplace:
 /plugin marketplace add YOUR_ORG/your-marketplace
-/plugin install upsun-skill@your-marketplace
+/plugin install upsun@your-marketplace
 ```
 
 The plugin will automatically:
@@ -110,6 +110,10 @@ Add Upsun CLI permissions to your Claude Code settings:
 **For global permissions**, edit `~/.claude/settings.json` with the same structure.
 
 > Please refer to your specific agent documentation for configuring permissions.
+
+### MCP Server (Optional)
+
+The plugin includes the [Upsun MCP Server](https://docs.upsun.com/get-started/ai/using-the-mcp.html) for natural-language infrastructure management. To enable it, replace `YOUR_API_TOKEN` in the plugin's `.mcp.json` with your Upsun API token (generate one in [Upsun Console](https://console.upsun.com) → Account settings).
 
 ### Verify Installation
 
