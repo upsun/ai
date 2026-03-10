@@ -6,7 +6,7 @@ from deepeval import assert_test
 def run_claude_code(prompt):
   """Execute Claude Code CLI and capture output"""
   result = subprocess.run(
-    ['claude', '-p', prompt],
+    ['claude', '-p', prompt, '--allowedTools', 'Bash'],
     capture_output=True,
     text=True,
     timeout=3000
