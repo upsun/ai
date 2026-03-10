@@ -57,8 +57,6 @@ jobs:
       working-directory: ./evals
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
-        CLAUDE_CODE_USE_VERTEX: "1"
-        CLOUD_ML_REGION: "global"
         ANTHROPIC_VERTEX_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         ANTHROPIC_VERTEX_REGION: "global"
         ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-4-5"
