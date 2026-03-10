@@ -56,9 +56,9 @@ jobs:
         ANTHROPIC_VERTEX_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         ANTHROPIC_VERTEX_REGION: "global"
         ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-4-5"
-        ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-4-5"
-        ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-4-5"
-        CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-4-5"
+        ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-4-6"
+        ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-4-6"
+        CLAUDE_CODE_SUBAGENT_MODEL: "claude-sonnet-4-6"
         CLAUDE_CODE_USE_VERTEX: "1"
 
       run: |
