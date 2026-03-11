@@ -45,7 +45,7 @@ jobs:
     - name: Install using-upsun skill
       run: |
         mkdir -p "$HOME/.claude/skills/"
-        cp -r plugins/upsun/skills/upsun "$HOME/.claude/skills/"
+        cp -r plugins/upsun/skills/. "$HOME/.claude/skills/"
     
     - name: Install dependencies
       working-directory: ./evals
