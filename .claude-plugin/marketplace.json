@@ -6,8 +6,7 @@
   "plugins": [
     {
       "name": "upsun",
-      "source": "./",
-      "description": "Claude plugin for Upsun"
+      "source": "./plugins/upsun"    
     }
   ]
 }
