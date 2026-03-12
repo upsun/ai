@@ -9,15 +9,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 | Component | Location | Description |
 |-----------|----------|-------------|
 | **Skills** | `plugins/upsun/skills/` | `using-upsun` – 130+ CLI commands for deployments, environments, backups, databases, and more |
-| **MCP Server** | `.mcp.json` | Natural-language infrastructure management via [Upsun MCP](https://docs.upsun.com/get-started/ai/using-the-mcp.html) |
-| **Agents** | `plugins/upsun/agents/` | Add custom subagents here (e.g. security reviewer) |
-| **Commands** | `plugins/upsun/commands/` | Add custom commands here (e.g. deploy-staging) |
-| **Hooks** | `plugins/upsun/hooks/` | Add event hooks here |
-| **Rules** | `plugins/upsun/rules/` | Add coding standards and review checklists here |
-| **Agents** | Placeholder for custom subagents (e.g. security reviewer) |
-| **Commands** | Placeholder for custom commands (e.g. deploy-staging) |
-| **Hooks** | Placeholder for event hooks |
-| **Rules** | Placeholder for coding standards and review checklists |
+| **MCP Server** | `plugins/upsun/.mcp.json` | Natural-language infrastructure management via [Upsun MCP](https://docs.upsun.com/get-started/ai/using-the-mcp.html) |
 
 ## Installation
 
@@ -176,12 +168,9 @@ All plugin components live inside `plugins/upsun/`. When adding new functionalit
 plugins/upsun/
 ├── .claude-plugin/
 │   └── plugin.json        # Plugin manifest
-├── skills/
-│   └── using-upsun/       # Upsun skill (current)
-├── agents/                # Add custom subagents here
-├── commands/              # Add custom slash commands here
-├── hooks/                 # Add event hooks here (hooks.json)
-└── rules/                 # Add coding standards here
+├── .mcp.json              # MCP server configuration
+└── skills/
+    └── using-upsun/       # Upsun skill
 ```
 
 This structure means the plugin is self-contained and reusable — any agent that installs `upsun@upsun` gets all components automatically.

@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "upsun",
-      "source": "./plugins/upsun"    
+      "source": "./plugins/upsun"
     }
   ]
 }
