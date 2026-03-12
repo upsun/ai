@@ -2,7 +2,7 @@
 
 > **⚠️ Warning:** This project is in early and active development. Things may change without notice.
 
-Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code, with support for other IDEs coming soon.
+Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code,Cursor, OpenCode, and Codex, with support for other IDEs coming soon.
 
 ## What's included
 
@@ -38,9 +38,9 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 /plugin install upsun@upsun
 ```
 
-### OpenCode
+### OpenCode & Codex
 
-[OpenCode](https://opencode.ai) supports skills but does not yet have a plugin marketplace, so install the skills manually.
+[OpenCode](https://opencode.ai) and [Codex](https://developers.openai.com/codex/skills) both follow the open agent skills standard and read skills from `.agents/skills/`. Neither has a plugin marketplace yet, so install manually.
 
 **Global install** (available in all projects):
 
@@ -56,7 +56,7 @@ git clone https://github.com/upsun/ai.git /tmp/upsun-ai
 cp -r /tmp/upsun-ai/plugins/upsun/skills/. .agents/skills/
 ```
 
-OpenCode will discover all skills automatically. To verify, ask your agent: "What skills do you have available?" and you should see the Upsun skills listed.
+Both agents will discover all skills automatically. To verify, ask: "What skills do you have available?" and you should see the Upsun skills listed.
 
 ### Other IDEs
 
@@ -73,7 +73,7 @@ git clone https://github.com/upsun/ai.git /tmp/upsun-ai
 cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.claude/skills/
 ```
 
-**OpenCode:** See the [OpenCode](#opencode) section above.
+**OpenCode & Codex:** See the [OpenCode & Codex](#opencode--codex) section above.
 
 ### Configure Permissions
 
