@@ -40,7 +40,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 
 ### OpenCode
 
-[OpenCode](https://opencode.ai) supports skills but does not yet have a plugin marketplace, so install the skill manually.
+[OpenCode](https://opencode.ai) supports skills but does not yet have a plugin marketplace, so install the skills manually.
 
 **Global install** (available in all projects):
 
