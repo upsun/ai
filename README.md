@@ -38,19 +38,42 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 /plugin install upsun@upsun
 ```
 
+### OpenCode
+
+[OpenCode](https://opencode.ai) supports skills but does not yet have a plugin marketplace, so install the skill manually.
+
+**Global install** (available in all projects):
+
+```bash
+git clone https://github.com/upsun/ai.git /tmp/upsun-ai
+cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.agents/skills/
+```
+
+**Project-local install** (only for the current project):
+
+```bash
+git clone https://github.com/upsun/ai.git /tmp/upsun-ai
+cp -r /tmp/upsun-ai/plugins/upsun/skills/. .agents/skills/
+```
+
+OpenCode will discover all skills automatically. To verify, ask your agent: "What skills do you have available?" and you should see the Upsun skills listed.
+
 ### Other IDEs
 
 Install instructions for Cursor, VS Code, and other IDEs will be added as support is released.
 
 ### Alternative: Skills only (manual)
 
-To install just the skill without the full plugin, copy `plugins/upsun/skills/using-upsun` to your agent's skills directory. For Claude Code:
+To install just the skills without the full plugin, copy `plugins/upsun/skills/` to your agent's skills directory. This includes all current and future skills in the repo.
+
+**Claude Code:**
 
 ```bash
-mkdir -p ~/.claude/skills
 git clone https://github.com/upsun/ai.git /tmp/upsun-ai
-cp -r /tmp/upsun-ai/plugins/upsun/skills/using-upsun ~/.claude/skills/upsun
+cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.claude/skills/
 ```
+
+**OpenCode:** See the [OpenCode](#opencode) section above.
 
 ### Configure Permissions
 
