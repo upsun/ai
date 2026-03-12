@@ -29,14 +29,14 @@ jobs:
       - name: Update .claude-plugin/marketplace.json
         run: |
           jq --arg v "${{ steps.version.outputs.version }}" \
-            '. + {version: $v}' \
+            '.plugins = [.plugins[] | . + {version: $v}]' \
             .claude-plugin/marketplace.json > /tmp/claude-marketplace.json
           mv /tmp/claude-marketplace.json .claude-plugin/marketplace.json
 
       - name: Update .cursor-plugin/marketplace.json
         run: |
           jq --arg v "${{ steps.version.outputs.version }}" \
-            '. + {version: $v}' \
+            '.plugins = [.plugins[] | . + {version: $v}]' \
             .cursor-plugin/marketplace.json > /tmp/cursor-marketplace.json
           mv /tmp/cursor-marketplace.json .cursor-plugin/marketplace.json
 
