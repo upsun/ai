@@ -45,11 +45,11 @@ Install via Claude Code plugin system:
 ```bash
 # In Claude Code, run:
 /plugin marketplace add upsun/claude-marketplace
-/plugin install upsun-skill
+/plugin install using-upsun
 
 # Or if using a custom marketplace:
 /plugin marketplace add YOUR_ORG/your-marketplace
-/plugin install upsun-skill@your-marketplace
+/plugin install using-upsun@your-marketplace
 ```
 
 The plugin will automatically:
