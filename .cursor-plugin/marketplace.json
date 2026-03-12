@@ -1,0 +1,12 @@
+{
+  "name": "upsun",
+  "owner": {
+    "name": "Upsun"
+  },
+  "plugins": [
+    {
+      "name": "upsun",
+      "source": "./plugins/upsun"
+    }
+  ]
+}
