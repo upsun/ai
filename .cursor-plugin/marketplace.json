@@ -6,8 +6,6 @@
   "plugins": [
     {
       "name": "upsun",
-      "source": "./plugins/upsun",
-      "version": "2026.03.1"
-    }
+      "source": "./plugins/upsun"    }
   ]
 }
