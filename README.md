@@ -2,7 +2,7 @@
 
 > **⚠️ Warning:** This project is in early and active development. Things may change without notice.
 
-Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code,Cursor with support for skills for other IDEs and agents via [skills.sh](https://skills.sh).
+Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and an MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code and Cursor, with skill-based integration for other IDEs and agents via [skills.sh](https://skills.sh).
 
 ## What's included
 
@@ -51,12 +51,13 @@ After installation, the skill is immediately available to your AI agent. Ask it 
 
 ### Alternative: Skills only (manual)
 
-To install just the skills without the full plugin, copy `plugins/upsun/skills/` to your agent's skills directory. This includes all current and future skills in the repo.
+To install just the skills without the full plugin, copy the contents of `plugins/upsun/skills/` into your agent's skills directory so that the `using-upsun/` folder ends up directly inside it (for example, at `~/.claude/skills/using-upsun/` for Claude Code). This includes all current and future skills in the repo.
 
 **Claude Code:**
 
 ```bash
 git clone https://github.com/upsun/ai.git /tmp/upsun-ai
+# Copy the contents of the skills directory so that ~/.claude/skills/using-upsun/ is created
 cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.claude/skills/
 ```
 
