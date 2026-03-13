@@ -2,7 +2,7 @@
 
 > **⚠️ Warning:** This project is in early and active development. Things may change without notice.
 
-Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code,Cursor, OpenCode, and Codex, with support for other IDEs coming soon.
+Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code,Cursor with support for skills for other IDEs and agents via [skills.sh](https://skills.sh).
 
 ## What's included
 
@@ -38,29 +38,16 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 /plugin install upsun@upsun
 ```
 
-### OpenCode & Codex
 
-[OpenCode](https://opencode.ai) and [Codex](https://developers.openai.com/codex/skills) both follow the open agent skills standard and read skills from `.agents/skills/`. Neither has a plugin marketplace yet, so install manually.
+### Other IDEs and AI Agents (via skills.sh)
 
-**Global install** (available in all projects):
-
-```bash
-git clone https://github.com/upsun/ai.git /tmp/upsun-ai
-cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.agents/skills/
-```
-
-**Project-local install** (only for the current project):
+Install the Upsun skill for Cursor, VS Code, Windsurf, and any other AI agent or IDE that supports [skills.sh](https://skills.sh):
 
 ```bash
-git clone https://github.com/upsun/ai.git /tmp/upsun-ai
-cp -r /tmp/upsun-ai/plugins/upsun/skills/. .agents/skills/
+npx skills add https://github.com/upsun/ai/plugins/upsun/skills --skill upsun
 ```
 
-Both agents will discover all skills automatically. To verify, ask: "What skills do you have available?" and you should see the Upsun skills listed.
-
-### Other IDEs
-
-Install instructions for Cursor, VS Code, and other IDEs will be added as support is released.
+After installation, the skill is immediately available to your AI agent. Ask it about Upsun tasks and it will use the skill automatically — for example: "Deploy to Upsun" or "Create a new environment."
 
 ### Alternative: Skills only (manual)
 
@@ -72,8 +59,6 @@ To install just the skills without the full plugin, copy `plugins/upsun/skills/`
 git clone https://github.com/upsun/ai.git /tmp/upsun-ai
 cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.claude/skills/
 ```
-
-**OpenCode & Codex:** See the [OpenCode & Codex](#opencode--codex) section above.
 
 ### Configure Permissions
 
