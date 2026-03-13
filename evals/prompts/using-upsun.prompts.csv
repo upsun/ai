@@ -1,0 +1,9 @@
+id,should_trigger,category,prompt
+test-01,true,explicit,"Check if I'm authenticated to Upsun"
+test-02,true,implicit,"List all my Upsun projects"
+test-03,true,contextual,"Create a backup of my production environment on Upsun before the deployment"
+test-04,true,implicit,"Deploy my latest code to the main Upsun environment"
+test-05,true,contextual,"Show me the logs for my Upsun web environment"
+test-06,true,implicit,"Scale up the resources for my Upsun production environment"
+test-07,false,negative,"What is Heroku and how does it compare to other cloud platforms?"
+test-08,false,negative,"Help me write a Python script to parse CSV files"
