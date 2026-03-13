@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["overall_pass", "score", "checks"],
+  "additionalProperties": false,
+  "properties": {
+    "overall_pass": {
+      "type": "boolean",
+      "description": "True if all critical checks passed and score >= 70"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Overall quality score from 0-100"
+    },
+    "checks": {
+      "type": "array",
+      "description": "Individual rubric check results",
+      "items": {
+        "type": "object",
+        "required": ["id", "pass", "notes"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Check identifier, one of: auth_check, task_addressed, correct_cli, actionable_output, no_hallucination"
+          },
+          "pass": {
+            "type": "boolean",
+            "description": "Whether this check passed"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Brief explanation of why the check passed or failed"
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,3 +9,6 @@ dependencies = [
     "google-genai>=1.60.0",
     "pytest-html>=4.1.1",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
