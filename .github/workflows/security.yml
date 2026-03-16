@@ -27,22 +27,21 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Run Agent Scan on skills
-        # mcp-scan --skills scans SKILL.md files for prompt injection,
+        # snyk-agent-scan --skills scans SKILL.md files for prompt injection,
         # hardcoded secrets, third-party content exposure, and other
         # AI-agent-specific attack patterns (Snyk W011 etc.)
         run: |
-          uvx mcp-scan@latest --skills plugins/upsun/skills/ \
-            --output scan-results.json \
-            --format json \
+          uvx snyk-agent-scan@latest --skills plugins/upsun/skills/ \
+            | tee scan-results.txt \
             || true   # collect results even when issues are found
 
       - name: Display scan summary
         if: always()
         run: |
-          if [ -f scan-results.json ]; then
+          if [ -f scan-results.txt ]; then
             echo "### Agent Skill Scan Results" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            cat scan-results.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat scan-results.txt >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
 
@@ -51,4 +50,4 @@ jobs:
         if: always()
         with:
           name: agent-skill-scan-results
-          path: scan-results.json
+          path: scan-results.txt
