@@ -44,7 +44,7 @@ jobs:
     
     - name: Install upsun plugin
       run: |
-        claude plugin marketplace add upsun/ai
+        claude plugin marketplace add .
         claude plugin install upsun@upsun
     
     - name: Install dependencies
