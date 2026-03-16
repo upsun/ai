@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams, ToolCall, ToolCallParams
 from deepeval.metrics import GEval, ToolCorrectnessMetric
@@ -21,6 +22,7 @@ def run_claude_code(prompt):
     'Bash(upsun user:*)',
     'Bash(upsun organization:*)',
   ]
+  env = {k: v for k, v in os.environ.items() if k != 'CLAUDECODE'}
   result = subprocess.run(
     ['claude', '-p', prompt,
      '--allowedTools', ','.join(allowed_tools),
@@ -29,7 +31,8 @@ def run_claude_code(prompt):
      '--dangerously-skip-permissions'],
     capture_output=True,
     text=True,
-    timeout=3000
+    timeout=3000,
+    env=env
   )
 
   tool_calls = []
@@ -58,10 +61,6 @@ def run_claude_code(prompt):
 def test_upsun_login():
   output, tool_calls = run_claude_code("Am i logged in to Upsun ?")
 
-  print("\n[DEBUG] Tool calls made:")
-  for tc in tool_calls:
-    print(f"  {tc.name}: {tc.input_parameters}")
-
   correctness_metric = GEval(
     name="Correctness",
     evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
@@ -72,6 +71,8 @@ def test_upsun_login():
       "Compare the actual output with the expected output to ensure they convey the same information"
     ]
   )
+
+  skill_name = "upsun:check-upsun-auth" if os.environ.get("CI") else "check-upsun-auth"
 
   tool_correctness_metric = ToolCorrectnessMetric(
     threshold=0.5,
@@ -84,7 +85,7 @@ def test_upsun_login():
     expected_output="No, you're not currently logged in to Upsun. Your session has expired. To log in, you'll need to run: upsun login",
     actual_output=output,
     tools_called=tool_calls,
-    expected_tools=[ToolCall(name="Skill", input_parameters={"skill": "check-upsun-auth"})]
+    expected_tools=[ToolCall(name="Skill", input_parameters={"skill": skill_name})]
   )
 
   assert_test(test_case, [correctness_metric, tool_correctness_metric])
