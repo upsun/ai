@@ -11,37 +11,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  # AI Agent Skill scan (prompt injection, secrets, malicious patterns)
-  snyk-agent-skills:
-    name: Snyk — Agent Skill Inspector
+  agentaudit:
+    name: AgentAudit — AI Package Security Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Run Snyk Agent Scan on skills
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Export requirements from pyproject.toml
+        # AgentAudit auto-detects from requirements.txt; export from uv lockfile
         run: |
-          uvx snyk-agent-scan@latest plugins/upsun/skills/ --json \
-            | tee scan-results.json \
-            || true   # capture results even when issues are found
+          pip install uv
+          uv export --frozen --no-dev --no-hashes \
+            --directory evals \
+            -o requirements.txt
 
-      - name: Display scan summary
-        if: always()
-        run: |
-          if [ -f scan-results.json ]; then
-            echo "### Snyk Agent Skill Scan Results" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            cat scan-results.json >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Upload scan results artifact
-        uses: actions/upload-artifact@v4
-        if: always()
+      - name: AgentAudit Security Scan
+        id: audit
+        uses: agentaudit-dev/agentaudit-github-action@v1
         with:
-          name: agent-skill-scan-results
-          path: scan-results.json
+          scan-config: "true"   # auto-detects packages from requirements.txt
+          fail-on: "unsafe"
+
+      - name: Fail if issues detected
+        if: steps.audit.outputs.has-issues == 'true'
+        run: |
+          echo "Security issues detected — review the summary above."
+          exit 1
