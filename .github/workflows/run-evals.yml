@@ -46,7 +46,8 @@ jobs:
       run: |
         claude plugin marketplace add ./
         claude plugin install upsun@upsun
-    
+    - name: Verify upsun plugin is installed
+      run: claude plugin list
     - name: Install dependencies
       working-directory: ./evals
       run: |
