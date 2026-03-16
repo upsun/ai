@@ -44,7 +44,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 Install the Upsun skill for Cursor, VS Code, Windsurf, and any other AI agent or IDE that supports [skills.sh](https://skills.sh):
 
 ```bash
-npx skills add https://github.com/upsun/ai/plugins/upsun/skills --skill upsun
+npx skills add https://github.com/upsun/ai --skill upsun
 ```
 
 After installation, the skill is immediately available to your AI agent. Ask it about Upsun tasks and it will use the skill automatically — for example: "Deploy to Upsun" or "Create a new environment."
