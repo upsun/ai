@@ -15,18 +15,12 @@ Returns the currently authenticated user's email and account details. If not aut
 
 ## Authenticate
 
-**Via browser (recommended):**
 ```bash
-upsun auth:browser-login
-```
-
-**Via API token:**
-```bash
-upsun auth:api-token-login
+upsun login
 ```
 
 ## Log out
 
 ```bash
-upsun auth:logout
+upsun logout
 ```
