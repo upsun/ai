@@ -1,6 +1,6 @@
 import json
 import subprocess
-from deepeval.test_case import LLMTestCase, LLMTestCaseParams, ToolCall
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams, ToolCall, ToolCallParams
 from deepeval.metrics import GEval, ToolCorrectnessMetric
 from deepeval import assert_test
 
@@ -68,14 +68,16 @@ def test_upsun_login():
     ]
   )
 
-  tool_correctness_metric = ToolCorrectnessMetric()
+  tool_correctness_metric = ToolCorrectnessMetric(
+    evaluation_params=[ToolCallParams.INPUT_PARAMETERS]
+  )
 
   test_case = LLMTestCase(
     input="Am i logged in to Upsun ?",
     expected_output="No, you're not currently logged in to Upsun. Your session has expired. To log in, you'll need to run: upsun login",
     actual_output=output,
     tools_called=tool_calls,
-    expected_tools=[ToolCall(name="Skill")]
+    expected_tools=[ToolCall(name="Skill", input_parameters={"name": "check-upsun-auth"})]
   )
 
   assert_test(test_case, [correctness_metric, tool_correctness_metric])
