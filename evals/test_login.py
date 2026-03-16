@@ -35,6 +35,13 @@ def run_claude_code(prompt):
     env=env
   )
 
+  if result.returncode != 0:
+    raise RuntimeError(
+      f"Claude CLI failed with exit code {result.returncode}.\n"
+      f"STDOUT:\n{result.stdout}\n"
+      f"STDERR:\n{result.stderr}"
+    )
+
   tool_calls = []
   final_output = ""
 
