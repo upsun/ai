@@ -8,6 +8,7 @@ def run_claude_code(prompt):
   """Execute Claude Code CLI and capture output with tool call traces"""
   allowed_tools = [
     'Skill',
+    'ToolSearch',
     'mcp__upsun__*',
     'Bash(upsun auth:*)',
     'Bash(upsun environment:*)',
@@ -69,7 +70,7 @@ def test_upsun_login():
   )
 
   tool_correctness_metric = ToolCorrectnessMetric(
-    evaluation_params=[ToolCallParams.INPUT_PARAMETERS]
+    evaluation_params=[ToolCallParams.TOOL_CALLED]
   )
 
   test_case = LLMTestCase(
