@@ -2,7 +2,7 @@
 
 > **⚠️ Warning:** This project is in early and active development. Things may change without notice.
 
-Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code, with support for other IDEs coming soon.
+Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and an MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code and Cursor, with skill-based integration for other IDEs and agents via [skills.sh](https://skills.sh).
 
 ## What's included
 
@@ -38,18 +38,27 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 /plugin install upsun@upsun
 ```
 
-### Other IDEs
 
-Install instructions for Cursor, VS Code, and other IDEs will be added as support is released.
+### Other IDEs and AI Agents (via skills.sh)
+
+Install the Upsun skill for Cursor, VS Code, Windsurf, and any other AI agent or IDE that supports [skills.sh](https://skills.sh):
+
+```bash
+npx skills add https://github.com/upsun/ai --skill upsun
+```
+
+After installation, the skill is immediately available to your AI agent. Ask it about Upsun tasks and it will use the skill automatically — for example: "Deploy to Upsun" or "Create a new environment."
 
 ### Alternative: Skills only (manual)
 
-To install just the skill without the full plugin, copy `plugins/upsun/skills/using-upsun` to your agent's skills directory. For Claude Code:
+To install just the skills without the full plugin, copy the contents of `plugins/upsun/skills/` into your agent's skills directory so that the `using-upsun/` folder ends up directly inside it (for example, at `~/.claude/skills/using-upsun/` for Claude Code). This includes all current and future skills in the repo.
+
+**Claude Code:**
 
 ```bash
-mkdir -p ~/.claude/skills
 git clone https://github.com/upsun/ai.git /tmp/upsun-ai
-cp -r /tmp/upsun-ai/plugins/upsun/skills/using-upsun ~/.claude/skills/upsun
+# Copy the contents of the skills directory so that ~/.claude/skills/using-upsun/ is created
+cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.claude/skills/
 ```
 
 ### Configure Permissions
