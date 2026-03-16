@@ -18,30 +18,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv / uvx
+      - name: Install uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Run Agent Scan on skills
-        # snyk-agent-scan --skills scans SKILL.md files for prompt injection,
-        # hardcoded secrets, third-party content exposure, and other
-        # AI-agent-specific attack patterns (Snyk W011 etc.)
+      - name: Run Snyk Agent Scan on skills
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
-          uvx snyk-agent-scan@latest --skills plugins/upsun/skills/ \
-            | tee scan-results.txt \
-            || true   # collect results even when issues are found
+          uvx snyk-agent-scan@latest plugins/upsun/skills/ --json \
+            | tee scan-results.json \
+            || true   # capture results even when issues are found
 
       - name: Display scan summary
         if: always()
         run: |
-          if [ -f scan-results.txt ]; then
-            echo "### Agent Skill Scan Results" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            cat scan-results.txt >> $GITHUB_STEP_SUMMARY
+          if [ -f scan-results.json ]; then
+            echo "### Snyk Agent Skill Scan Results" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat scan-results.json >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
 
@@ -50,4 +44,4 @@ jobs:
         if: always()
         with:
           name: agent-skill-scan-results
-          path: scan-results.txt
+          path: scan-results.json
