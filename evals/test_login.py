@@ -1,11 +1,13 @@
+import json
 import subprocess
-from deepeval.test_case import LLMTestCase, LLMTestCaseParams
-from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams, ToolCall
+from deepeval.metrics import GEval, ToolCorrectnessMetric
 from deepeval import assert_test
 
 def run_claude_code(prompt):
-  """Execute Claude Code CLI and capture output"""
+  """Execute Claude Code CLI and capture output with tool call traces"""
   allowed_tools = [
+    'Skill',
     'mcp__upsun__*',
     'Bash(upsun auth:*)',
     'Bash(upsun environment:*)',
@@ -19,18 +21,42 @@ def run_claude_code(prompt):
     'Bash(upsun organization:*)',
   ]
   result = subprocess.run(
-    ['claude', '-p', prompt, '--allowedTools', ','.join(allowed_tools), '--dangerously-skip-permissions'],
+    ['claude', '-p', prompt,
+     '--allowedTools', ','.join(allowed_tools),
+     '--output-format', 'stream-json',
+     '--verbose',
+     '--dangerously-skip-permissions'],
     capture_output=True,
     text=True,
     timeout=3000
   )
-  return result.stdout
+
+  tool_calls = []
+  final_output = ""
+
+  for line in result.stdout.splitlines():
+    if not line.strip():
+      continue
+    try:
+      event = json.loads(line)
+    except json.JSONDecodeError:
+      continue
+
+    if event.get("type") == "assistant":
+      for block in event.get("message", {}).get("content", []):
+        if block.get("type") == "tool_use":
+          tool_calls.append(ToolCall(
+            name=block["name"],
+            input_parameters=block.get("input", {})
+          ))
+    elif event.get("type") == "result":
+      final_output = event.get("result", "")
+
+  return final_output, tool_calls
 
 def test_upsun_login():
-  # Run Claude Code
-  output = run_claude_code("Am i logged in to Upsun ?")
-  
-  # Create correctness metric
+  output, tool_calls = run_claude_code("Am i logged in to Upsun ?")
+
   correctness_metric = GEval(
     name="Correctness",
     evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
@@ -41,11 +67,15 @@ def test_upsun_login():
       "Compare the actual output with the expected output to ensure they convey the same information"
     ]
   )
-  
-  # Evaluate with DeepEval
+
+  tool_correctness_metric = ToolCorrectnessMetric()
+
   test_case = LLMTestCase(
     input="Am i logged in to Upsun ?",
     expected_output="No, you're not currently logged in to Upsun. Your session has expired. To log in, you'll need to run: upsun login",
-    actual_output=output
+    actual_output=output,
+    tools_called=tool_calls,
+    expected_tools=[ToolCall(name="Skill")]
   )
-  assert_test(test_case, [correctness_metric])
+
+  assert_test(test_case, [correctness_metric, tool_correctness_metric])
