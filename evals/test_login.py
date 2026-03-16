@@ -58,6 +58,10 @@ def run_claude_code(prompt):
 def test_upsun_login():
   output, tool_calls = run_claude_code("Am i logged in to Upsun ?")
 
+  print("\n[DEBUG] Tool calls made:")
+  for tc in tool_calls:
+    print(f"  {tc.name}: {tc.input_parameters}")
+
   correctness_metric = GEval(
     name="Correctness",
     evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
