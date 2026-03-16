@@ -1,0 +1,54 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    # Run every Monday at 08:00 UTC to catch newly disclosed CVEs
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+jobs:
+  # AI Agent Skill scan (prompt injection, secrets, malicious patterns)
+  snyk-agent-skills:
+    name: Snyk — Agent Skill Inspector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv / uvx
+        uses: astral-sh/setup-uv@v5
+
+      - name: Run Agent Scan on skills
+        # mcp-scan --skills scans SKILL.md files for prompt injection,
+        # hardcoded secrets, third-party content exposure, and other
+        # AI-agent-specific attack patterns (Snyk W011 etc.)
+        run: |
+          uvx mcp-scan@latest --skills plugins/upsun/skills/ \
+            --output scan-results.json \
+            --format json \
+            || true   # collect results even when issues are found
+
+      - name: Display scan summary
+        if: always()
+        run: |
+          if [ -f scan-results.json ]; then
+            echo "### Agent Skill Scan Results" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat scan-results.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload scan results artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agent-skill-scan-results
+          path: scan-results.json
