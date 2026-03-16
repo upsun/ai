@@ -42,10 +42,10 @@ jobs:
         curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
         echo "$HOME/.platformsh/bin" >> $GITHUB_PATH
     
-    - name: Install using-upsun skill
+    - name: Install upsun plugin
       run: |
-        mkdir -p "$HOME/.claude/skills/"
-        cp -r plugins/upsun/skills/. "$HOME/.claude/skills/"
+        claude plugin marketplace add upsun/ai
+        claude plugin install upsun@upsun
     
     - name: Install dependencies
       working-directory: ./evals
