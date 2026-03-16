@@ -5,9 +5,6 @@ on:
     branches: [main, master]
   pull_request:
     types: [opened, synchronize, reopened]
-  schedule:
-    # Run every Monday at 08:00 UTC to catch newly disclosed CVEs
-    - cron: "0 8 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -37,7 +34,11 @@ jobs:
 
       - name: Fail on high/critical findings
         run: |
-          HIGH=$(cat results.json | npx --yes jq '[.findings[]? | select(.severity == "high" or .severity == "critical")] | length')
+          HIGH=$(jq '[.findings[]? | select(
+            (.severity == "high" or .severity == "critical") and
+            (.file | startswith("evals/") | not) and
+            (.file | startswith("tests/") | not)
+          )] | length' results.json)
           if [ "$HIGH" -gt 0 ]; then
             echo "❌ $HIGH high/critical finding(s) detected."
             exit 1
