@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on PRs from the same repository, not forks.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
     
     steps:
     - name: Checkout repository
@@ -76,6 +80,14 @@ jobs:
           --html=report.html \
           --self-contained-html
     
+    - name: Publish eval results to PR
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always() && github.event_name == 'pull_request'
+      with:
+        files: evals/results.xml
+        comment_title: "Eval Results"
+        check_name: "Eval Results"
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
