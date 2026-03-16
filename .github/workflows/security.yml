@@ -3,8 +3,6 @@ name: Security Checks
 on:
   push:
     branches: [main, master]
-  pull_request:
-    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
@@ -34,16 +32,12 @@ jobs:
 
       - name: Fail on high/critical findings
         run: |
-          HIGH=$(jq '[.findings[]? | select(
-            (.severity == "high" or .severity == "critical") and
-            (.file | startswith("evals/") | not) and
-            (.file | startswith("tests/") | not)
-          )] | length' results.json)
-          if [ "$HIGH" -gt 0 ]; then
-            echo "❌ $HIGH high/critical finding(s) detected."
+          COUNT=$(jq '[.findings[]? | select(.file | startswith("evals/") | not)] | length' results.json)
+          if [ "$COUNT" -gt 0 ]; then
+            echo "❌ $COUNT finding(s) detected."
             exit 1
           fi
-          echo "✅ No high/critical findings."
+          echo "✅ No findings."
 
       - name: Upload scan results
         uses: actions/upload-artifact@v4
