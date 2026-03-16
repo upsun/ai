@@ -77,7 +77,7 @@ def test_upsun_login():
     expected_output="No, you're not currently logged in to Upsun. Your session has expired. To log in, you'll need to run: upsun login",
     actual_output=output,
     tools_called=tool_calls,
-    expected_tools=[ToolCall(name="Skill", input_parameters={"name": "check-upsun-auth"})]
+    expected_tools=[ToolCall(name="Skill", input_parameters={"skill": "check-upsun-auth"})]
   )
 
   assert_test(test_case, [correctness_metric, tool_correctness_metric])
