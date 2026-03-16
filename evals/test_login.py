@@ -70,7 +70,9 @@ def test_upsun_login():
   )
 
   tool_correctness_metric = ToolCorrectnessMetric(
-    evaluation_params=[ToolCallParams.TOOL_CALLED]
+    threshold=0.5,
+    evaluation_params=[ToolCallParams.INPUT_PARAMETERS],
+    include_reason=True
   )
 
   test_case = LLMTestCase(
