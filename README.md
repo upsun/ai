@@ -36,8 +36,10 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 # In Claude Code, run:
 /plugin marketplace add upsun/ai
 /plugin install upsun@upsun
+/reload-plugins
 ```
 
+> **Note:** A restart of Claude Code may be needed if the plugin install command fails.
 
 ### Other IDEs and AI Agents (via skills.sh)
 
