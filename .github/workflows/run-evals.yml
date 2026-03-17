@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on PRs from the same repository, not forks.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
     
     steps:
     - name: Checkout repository
@@ -42,11 +46,12 @@ jobs:
         curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
         echo "$HOME/.platformsh/bin" >> $GITHUB_PATH
     
-    - name: Install using-upsun skill
+    - name: Install upsun plugin
       run: |
-        mkdir -p "$HOME/.claude/skills/"
-        cp -r plugins/upsun/skills/. "$HOME/.claude/skills/"
-    
+        claude plugin marketplace add ./
+        claude plugin install upsun@upsun
+    - name: Verify upsun plugin is installed
+      run: claude plugin list
     - name: Install dependencies
       working-directory: ./evals
       run: |
@@ -75,6 +80,14 @@ jobs:
           --html=report.html \
           --self-contained-html
     
+    - name: Publish eval results to PR
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always() && github.event_name == 'pull_request'
+      with:
+        files: evals/results.xml
+        comment_title: "Eval Results"
+        check_name: "Eval Results"
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
