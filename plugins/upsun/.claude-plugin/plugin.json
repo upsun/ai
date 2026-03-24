@@ -1,4 +1,4 @@
 {
   "name": "upsun",
-  "description": "Six focused Upsun skills: deploy & environment lifecycle (upsun-deploy), database & service operations (upsun-database), logs & troubleshooting (upsun-logs), resource scaling & metrics (upsun-resources), backup & restore (upsun-backup), and domains, variables & integrations (upsun-domain)."
+  "description": "Claude plugin for Upsun"
 }
