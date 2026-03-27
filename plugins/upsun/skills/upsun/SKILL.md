@@ -38,7 +38,7 @@ scoop install upsun
 
 Then authenticate:
 ```bash
-upsun auth:login
+upsun login
 ```
 
 ### 2. Create project
