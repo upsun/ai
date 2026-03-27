@@ -57,7 +57,7 @@ See [references/config.md](references/config.md) for a minimal working template 
 ### 4. Set initial resources
 
 ```bash
-upsun resources:set --size myapp:1
+upsun resources:set --size myapp:S
 ```
 Size options: XS / S / M / L / XL / 2XL. Start small; you can scale later.
 
