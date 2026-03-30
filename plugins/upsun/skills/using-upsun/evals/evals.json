@@ -1,0 +1,1080 @@
+{
+  "skill_name": "upsun",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scale my web app container to use 2 CPUs. The app is called 'frontend' and the project id is p123.",
+      "expected_output": "Uses resources:set with the correct CPU value syntax",
+      "files": [],
+      "expectations": [
+        "Uses `upsun resources:set --size frontend:2` (numeric CPU value, not T-shirt size like L or XL)",
+        "Does NOT use T-shirt sizing (S/M/L/XL) for container sizes",
+        "Mentions that RAM is automatically determined by the container profile"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to run 3 instances of my app for high availability. The app is called 'api'. How do I set that up?",
+      "expected_output": "Uses resources:set --count for horizontal scaling",
+      "files": [],
+      "expectations": [
+        "Uses `upsun resources:set --count api:3`",
+        "Does NOT suggest editing .upsun/config.yaml to set instance count",
+        "Mentions that instance count changes alone typically cause no downtime"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Give me the .upsun/config.yaml to set up a PHP 8.4 app with a PostgreSQL 16 database.",
+      "expected_output": "Correct YAML with proper type strings and structure",
+      "files": [],
+      "expectations": [
+        "Uses `type: 'php:8.4'` (not `php:8.4-fpm` or `php:latest`)",
+        "Uses `type: postgresql:16` for the service (not `postgres:16` or `pg:16`)",
+        "Config has top-level `applications:` and `services:` sections",
+        "Includes a `relationships:` section connecting the app to postgresql"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Write a build hook that installs composer dependencies and a deploy hook that runs database migrations for my PHP Symfony app.",
+      "expected_output": "Correct hooks with proper understanding of filesystem and service availability",
+      "files": [],
+      "expectations": [
+        "Build hook runs composer install (has writable filesystem, no service access)",
+        "Deploy hook runs migrations (has service access, read-only filesystem)",
+        "Does NOT put migrations in the build hook (no service access during build)",
+        "Does NOT put composer install in the deploy hook (filesystem is read-only)"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want to add a background queue worker to my Node.js app that runs `node worker.js`. Show me the config.",
+      "expected_output": "Correct worker configuration under the workers property",
+      "files": [],
+      "expectations": [
+        "Defines the worker under `workers:` in the application config",
+        "Uses `commands: { start: 'node worker.js' }` syntax",
+        "Mentions that workers don't run deploy/post_deploy hooks or crons",
+        "Mentions the 15-second SIGTERM grace period before SIGKILL"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Set up a cron job that runs `php artisan schedule:run` every 5 minutes on my Laravel app.",
+      "expected_output": "Correct cron syntax with minimum interval awareness",
+      "files": [],
+      "expectations": [
+        "Uses `spec: '*/5 * * * *'` or the `H` hash syntax",
+        "Places the cron under the `crons:` property in the app config",
+        "Mentions that 5 minutes is the minimum cron interval on Upsun",
+        "Uses `commands: { start: 'php artisan schedule:run' }` syntax"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "How do I set a sensitive environment variable called STRIPE_SECRET_KEY on my production environment only, and make sure it doesn't inherit to child environments?",
+      "expected_output": "Uses variable:create with --sensitive and --inheritable false",
+      "files": [],
+      "expectations": [
+        "Uses `upsun variable:create` with `--sensitive true`",
+        "Uses `--inheritable false` to prevent child inheritance",
+        "Targets the production environment with `-e main` or `--environment main`",
+        "Uses `--prefix env:` or `--name env:STRIPE_SECRET_KEY` to expose as environment variable"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I want to restrict access to my staging environment so only our office IP 203.0.113.50 can access it.",
+      "expected_output": "Uses environment:http-access CLI command with IP filtering",
+      "files": [],
+      "expectations": [
+        "Uses `upsun environment:http-access` command",
+        "Sets `--access allow:203.0.113.50`",
+        "Sets `--access deny:0.0.0.0/0` to block everyone else",
+        "Mentions that allow entries should come before deny entries"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Create a source operation that automatically updates Drupal core via composer and commits the result.",
+      "expected_output": "Correct source operation YAML and trigger command",
+      "files": [],
+      "expectations": [
+        "Defines the operation under `source: { operations: { ... } }` in the app config",
+        "Uses `command:` with composer update and git add/commit",
+        "Shows how to trigger it with `upsun source-operation:run`",
+        "Includes `set -e` for error handling in the command"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "I'm pushing a new branch for the first time and want it to use minimal resources to save costs. How?",
+      "expected_output": "Uses --resources-init=minimum flag",
+      "files": [],
+      "expectations": [
+        "Uses `upsun push --resources-init=minimum` or `upsun environment:branch --resources-init=minimum`",
+        "Explains that the 'minimum' strategy allocates reduced resources (e.g., 0.1 CPU, 64MB RAM for app containers)",
+        "Does NOT suggest manually setting resources after deployment as the only option"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "What container profiles are available on Upsun and what do they control?",
+      "expected_output": "Lists the actual container profiles with correct names",
+      "files": [],
+      "expectations": [
+        "Lists HIGH_CPU, BALANCED, HIGH_MEMORY, and HIGHER_MEMORY as the available profiles",
+        "Explains that profiles define CPU-to-memory ratios",
+        "Does NOT invent profile names like 'STANDARD' or 'COMPUTE_OPTIMIZED'"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "My deploy hook is running database migrations and it's taking 10 minutes, causing the site to be down. How can I fix this?",
+      "expected_output": "Explains that deploy hook blocks requests and suggests alternatives",
+      "files": [],
+      "expectations": [
+        "Explains that the deploy hook blocks incoming requests during execution",
+        "Suggests moving non-exclusive work to the post_deploy hook",
+        "Mentions that post_deploy runs concurrently with traffic",
+        "Warns that post_deploy commands must be idempotent"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "I want to push my code to a new environment called 'staging' with type 'staging' using git push options instead of the CLI.",
+      "expected_output": "Shows git push -o options for environment configuration",
+      "files": [],
+      "expectations": [
+        "Uses `git push upsun -o \"environment.type=staging\"` syntax",
+        "May also show `-o \"environment.title=Staging\"` or `-o \"environment.status=active\"`",
+        "Mentions that push options are disabled when source integrations are configured"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Set up a Redis 7.2 cache service and connect it to my Python app in .upsun/config.yaml.",
+      "expected_output": "Correct Redis service and relationship configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: redis:7.2` (not `redis-cache:7.2` or `redis:latest`)",
+        "Defines the service under the top-level `services:` section",
+        "Adds a relationship in the app's `relationships:` section",
+        "Uses the correct single-file .upsun/config.yaml format"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "I need to allocate 2GB of disk to my PostgreSQL service called 'database'.",
+      "expected_output": "Uses resources:set --disk with correct syntax",
+      "files": [],
+      "expectations": [
+        "Uses `upsun resources:set --disk database:2048` (value in MB)",
+        "Does NOT suggest editing .upsun/config.yaml to set disk size",
+        "Mentions that changing resources triggers a redeployment"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "How do I set up a composable image with PHP 8.4 and Node.js for my app that needs both runtimes?",
+      "expected_output": "Shows composable image configuration with stack syntax",
+      "files": [],
+      "expectations": [
+        "Uses `type: 'composable:latest'` or similar composable type",
+        "Defines `stack:` with `runtimes:` listing both `php@8.4` and a Node.js version",
+        "Does NOT suggest running two separate app containers as the solution"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "My build hook is failing because it can't connect to the database to generate some cache files. What's wrong?",
+      "expected_output": "Explains that services are not available during the build phase",
+      "files": [],
+      "expectations": [
+        "Explains that the build hook does NOT have access to services",
+        "Suggests moving database-dependent operations to the deploy or post_deploy hook",
+        "Mentions that the build hook has a writable filesystem but no service connections"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "I want to create a variable that's only available at build time, not at runtime. It's a license key for a build tool.",
+      "expected_output": "Uses --visible-build true --visible-runtime false",
+      "files": [],
+      "expectations": [
+        "Uses `upsun variable:create` with `--visible-build true --visible-runtime false`",
+        "Sets `--level project` since it's a build tool license",
+        "Uses `--sensitive true` since it's a license key"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "How do I SSH into a specific worker container called 'queue' on my production environment?",
+      "expected_output": "Uses upsun ssh with worker targeting",
+      "files": [],
+      "expectations": [
+        "Uses `upsun ssh` with the appropriate flags to target the worker",
+        "Uses `--app` or `--worker` flag to specify the 'queue' worker",
+        "Specifies the environment with `-e main` or `--environment main`"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "What's the difference between a mount with source 'storage' vs source 'tmp' vs source 'instance'?",
+      "expected_output": "Correctly describes the three mount source types",
+      "files": [],
+      "expectations": [
+        "Explains that 'storage' mounts are shared across instances",
+        "Explains that 'tmp' mounts are instance-specific with max 8GB",
+        "Explains that 'instance' mounts are dedicated per-instance local storage",
+        "Mentions that 'tmp' mounts may be removed during maintenance"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "Set up MariaDB 11 and Elasticsearch 8.5 services for my PHP app.",
+      "expected_output": "Correct service type strings in .upsun/config.yaml",
+      "files": [],
+      "expectations": [
+        "Uses `type: mariadb:11` (not `mysql:11`)",
+        "Uses `type: elasticsearch:8.5`",
+        "Defines both under the `services:` top-level section",
+        "Adds relationships for both services in the app config"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "I want to branch my production environment but have the new branch use the exact same resources as production.",
+      "expected_output": "Uses --resources-init=parent",
+      "files": [],
+      "expectations": [
+        "Uses `upsun environment:branch --resources-init=parent`",
+        "Explains that 'parent' replicates parent environment resources",
+        "Mentions that data is also cloned from the parent when branching"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "How do I dump my PostgreSQL database to a local file? The relationship is called 'database'.",
+      "expected_output": "Uses upsun db:dump with correct syntax",
+      "files": [],
+      "expectations": [
+        "Uses `upsun db:dump` or `upsun db:dump --relationship database`",
+        "Mentions the `--gzip` option for compressed dumps",
+        "Does NOT suggest using pg_dump directly via SSH as the primary method"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "Import a SQL dump file called backup.sql into my staging PostgreSQL database.",
+      "expected_output": "Uses upsun sql to import",
+      "files": [],
+      "expectations": [
+        "Uses `upsun sql < backup.sql` or `upsun sql --relationship database -e staging < backup.sql`",
+        "Specifies the staging environment",
+        "Does NOT suggest SSHing in and running psql manually as the primary method"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Set all my apps and services to use 0.1 CPU to minimize costs on a development branch.",
+      "expected_output": "Uses wildcard syntax with resources:set",
+      "files": [],
+      "expectations": [
+        "Uses `upsun resources:set --size '*:0.1'` or similar wildcard syntax",
+        "Uses the numeric CPU value 0.1 (not a T-shirt size)"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "My cron jobs aren't running on my preview environment. It's been 2 weeks since my last deploy.",
+      "expected_output": "Explains the 14-day auto-pause behavior",
+      "files": [],
+      "expectations": [
+        "Explains that preview environments without deployments for 14 days have crons paused",
+        "Suggests redeploying or pushing changes to restart crons",
+        "Does NOT suggest there's a bug or configuration issue"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "I want crons to run only on production, not on staging or dev environments.",
+      "expected_output": "Shows conditional execution using PLATFORM_ENVIRONMENT_TYPE",
+      "files": [],
+      "expectations": [
+        "Uses `$PLATFORM_ENVIRONMENT_TYPE` environment variable in a shell conditional",
+        "Shows an `if [ \"$PLATFORM_ENVIRONMENT_TYPE\" = production ]` pattern",
+        "Puts the conditional inside the cron's `commands.start` block"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "What environment variables does Upsun expose for a PostgreSQL relationship?",
+      "expected_output": "Lists the correct Upsun-provided environment variables",
+      "files": [],
+      "expectations": [
+        "Lists POSTGRESQL_HOST, POSTGRESQL_PORT, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD, POSTGRESQL_PATH",
+        "Mentions POSTGRESQL_SCHEME",
+        "Mentions that the full list can be viewed via `upsun ssh env`"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "Add basic auth (user: admin, password: secret123) to my testing environment.",
+      "expected_output": "Uses environment:http-access with --auth flag",
+      "files": [],
+      "expectations": [
+        "Uses `upsun environment:http-access -e testing --auth admin:secret123`",
+        "Warns about combining IP filtering and basic auth",
+        "Mentions that changing access control triggers a new deployment"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "How do I validate my .upsun/config.yaml without deploying?",
+      "expected_output": "Uses app:config-validate command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun app:config-validate` or the aliases `validate` or `lint`",
+        "Does NOT suggest deploying to a test branch as the only way to validate"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Set up a Valkey 8 cache service. How is it different from Redis on Upsun?",
+      "expected_output": "Shows Valkey service configuration with correct type string",
+      "files": [],
+      "expectations": [
+        "Uses `type: valkey:8` (not `redis:8`)",
+        "Mentions that Valkey is a Redis fork available on Upsun",
+        "Shows the correct service definition under `services:`"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "Set up a RabbitMQ message queue for my app.",
+      "expected_output": "Correct RabbitMQ service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: rabbitmq:` with a version as the service type",
+        "Defines it under `services:`",
+        "Adds a relationship in the app config"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "My deploy hook takes too long and times out. What's the timeout limit?",
+      "expected_output": "Mentions build hook 1-hour timeout and deploy hook behavior",
+      "files": [],
+      "expectations": [
+        "Mentions that build hooks timeout after 1 hour",
+        "Explains that deploy hooks block incoming requests",
+        "Suggests splitting long operations between deploy and post_deploy hooks"
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "I want my deploy hook to fail fast on the first error instead of continuing.",
+      "expected_output": "Suggests using set -e",
+      "files": [],
+      "expectations": [
+        "Suggests adding `set -e` at the beginning of the hook script",
+        "Explains that build hooks naturally abort on failure but deploy/post_deploy may not"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "How do I change the parent of my 'feature-login' environment from 'main' to 'staging'?",
+      "expected_output": "Uses the correct CLI command to change parent",
+      "files": [],
+      "expectations": [
+        "Uses a CLI command to change the environment parent",
+        "Does NOT suggest deleting and recreating the environment"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "Set up a Kafka service for event streaming in my app.",
+      "expected_output": "Shows Kafka service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: kafka:` with a version as the service type",
+        "Defines it under `services:`",
+        "Adds a relationship in the app config"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "Sync code from parent (main) to my feature branch but keep my branch's data intact.",
+      "expected_output": "Uses environment:synchronize with code-only sync",
+      "files": [],
+      "expectations": [
+        "Uses `upsun synchronize` or `upsun environment:synchronize` with code-only option",
+        "Specifies syncing code but NOT data",
+        "Warns that syncing data would overwrite the branch's database"
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "How do I get connection details for my MongoDB service from within my Node.js app?",
+      "expected_output": "Shows how to use relationship environment variables",
+      "files": [],
+      "expectations": [
+        "References Upsun-provided environment variables for the relationship",
+        "Mentions `upsun relationships` or `upsun ssh env` to view connection details",
+        "Does NOT suggest hardcoding connection strings"
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "I need to add a custom hostname mapping so my app can resolve 'legacy-api.internal' to 10.0.0.5.",
+      "expected_output": "Uses additional_hosts property in config",
+      "files": [],
+      "expectations": [
+        "Uses the `additional_hosts:` property in the app configuration",
+        "Shows the correct YAML syntax mapping hostname to IP"
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "My app needs a web server and a Symfony Messenger worker consuming from RabbitMQ. Show the complete config.",
+      "expected_output": "Shows app config with web instance and worker",
+      "files": [],
+      "expectations": [
+        "Defines a web instance with the main app",
+        "Defines a separate worker under `workers:` with `commands.start`",
+        "Worker inherits relationships from the main app",
+        "Mentions that the worker won't run deploy hooks or crons"
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "How do I pause a development environment to stop billing while keeping the code?",
+      "expected_output": "Uses environment:pause command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun environment:pause`",
+        "Explains that pausing stops services and billing",
+        "Mentions `upsun environment:resume` to reactivate",
+        "Distinguishes pausing from deactivating"
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "Set up OpenSearch 2 as a search service for my Ruby on Rails app.",
+      "expected_output": "Correct OpenSearch service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: opensearch:2` (not `elasticsearch:2`)",
+        "Defines it under `services:`",
+        "Adds a relationship in the app config"
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "Install the pdo_pgsql and redis PHP extensions for my app.",
+      "expected_output": "Uses runtime.extensions in the PHP app config",
+      "files": [],
+      "expectations": [
+        "Uses `runtime: { extensions: ['pdo_pgsql', 'redis'] }` in the app config",
+        "Does NOT suggest installing via apt-get or pecl in the build hook"
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "What happens to my environment if I don't deploy for 14 days?",
+      "expected_output": "Explains auto-pause for preview environments",
+      "files": [],
+      "expectations": [
+        "Explains that preview environments are automatically paused after 14 days",
+        "Mentions that crons stop running",
+        "Distinguishes production (not auto-paused) from preview environments"
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "How do I set up autoscaling for my web app on Upsun?",
+      "expected_output": "Uses autoscaling CLI commands",
+      "files": [],
+      "expectations": [
+        "Uses `upsun autoscaling:set` or similar autoscaling CLI command",
+        "Does NOT suggest Kubernetes HPA or custom scripts"
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "Run `python manage.py migrate` on my staging environment without SSHing in.",
+      "expected_output": "Uses upsun ssh with inline command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun ssh -e staging -- python manage.py migrate`",
+        "Shows the `--` separator before the command"
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "Set up persistent file storage for user uploads at /app/public/uploads.",
+      "expected_output": "Correct mount configuration",
+      "files": [],
+      "expectations": [
+        "Uses the `mounts:` property with `source: storage` and `source_path`",
+        "Maps 'public/uploads' to a storage mount"
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "How do I configure build flavor for my Node.js app?",
+      "expected_output": "Explains the build.flavor property",
+      "files": [],
+      "expectations": [
+        "Mentions `build: { flavor: none }` configuration",
+        "Explains that 'none' disables the default build steps"
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "Set the timezone for my app to America/New_York for cron scheduling.",
+      "expected_output": "Uses the timezone property",
+      "files": [],
+      "expectations": [
+        "Uses `timezone: 'America/New_York'` in the application config",
+        "Mentions that the default timezone is UTC"
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "How do I make my post_deploy hook safe for concurrent execution?",
+      "expected_output": "Explains idempotency requirements",
+      "files": [],
+      "expectations": [
+        "Explains that post_deploy runs concurrently with traffic",
+        "Mentions that commands must be idempotent",
+        "Mentions that post_deploy runs on every redeploy"
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "What's the difference between environment:delete and environment:deactivate?",
+      "expected_output": "Correctly distinguishes between the two",
+      "files": [],
+      "expectations": [
+        "Explains that delete permanently removes the environment and data",
+        "Explains that deactivate keeps code but removes services and data",
+        "Recommends deactivating if the branch might be needed later"
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "My cron job is set to run every minute but runs less frequently. Why?",
+      "expected_output": "Explains the 5-minute minimum and randomized delay",
+      "files": [],
+      "expectations": [
+        "Explains the minimum 5-minute interval on Upsun",
+        "Mentions the randomized delay to prevent simultaneous execution",
+        "Mentions that only one cron runs per app container at a time"
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "Schedule a source operation to run daily at midnight to auto-update dependencies.",
+      "expected_output": "Shows cron + source operation combination",
+      "files": [],
+      "expectations": [
+        "Combines a cron job with `upsun source-operation:run`",
+        "Mentions the CLI must be installed in the build hook",
+        "Mentions UPSUN_CLI_TOKEN as environment variable",
+        "Uses `--no-wait --yes` flags"
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "I want guaranteed (dedicated) CPU for my production app instead of shared.",
+      "expected_output": "Explains the guaranteed vs shared CPU model",
+      "files": [],
+      "expectations": [
+        "Distinguishes shared CPU (default) from guaranteed CPU (dedicated host)",
+        "Explains that guaranteed CPU provides consistent performance"
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "How do I check what resources are currently allocated to all my apps and services?",
+      "expected_output": "Uses resources:get command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun resources:get` to display current allocations",
+        "Does NOT suggest checking .upsun/config.yaml"
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "Set up a Varnish HTTP cache in front of my PHP app.",
+      "expected_output": "Shows Varnish service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: varnish:` with a version",
+        "Defines it under `services:`",
+        "Shows the relationship and routing configuration"
+      ]
+    },
+    {
+      "id": 57,
+      "prompt": "Set up PostgreSQL read-only replication for reporting queries.",
+      "expected_output": "References PostgreSQL read-only replication",
+      "files": [],
+      "expectations": [
+        "References read-only replication as an available feature",
+        "Shows how to define a read-only endpoint in the relationship config",
+        "Does NOT suggest setting up manual replication"
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "Open the Upsun Console (web UI) for my project from the CLI.",
+      "expected_output": "Uses upsun console command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun console` or `upsun web`",
+        "Does NOT tell the user to manually navigate to a URL"
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "Use Headless Chrome as a service for PDF generation in my app.",
+      "expected_output": "Shows Headless Chrome service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: chrome-headless:` with a version",
+        "Defines it under `services:`",
+        "Adds a relationship in the app config"
+      ]
+    },
+    {
+      "id": 60,
+      "prompt": "Configure network storage shared between multiple app containers.",
+      "expected_output": "Shows network storage service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: network-storage:` as the service type",
+        "Shows how to mount it as shared storage between apps"
+      ]
+    },
+    {
+      "id": 61,
+      "prompt": "My app has .platform.app.yaml from Platform.sh. What do I change to migrate to Upsun?",
+      "expected_output": "Explains config format differences",
+      "files": [],
+      "expectations": [
+        "Mentions converting from .platform.app.yaml to .upsun/config.yaml",
+        "Explains the unified config file format (applications + services in one file)",
+        "Mentions `applications:` and `services:` top-level keys",
+        "May mention `upsun project:init`"
+      ]
+    },
+    {
+      "id": 62,
+      "prompt": "List all source integrations on my project.",
+      "expected_output": "Uses upsun integrations command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun integrations` or `upsun integration:list`",
+        "Mentions `upsun integration:validate` to check health"
+      ]
+    },
+    {
+      "id": 63,
+      "prompt": "Trigger a runtime operation called 'clear-cache' on my production app.",
+      "expected_output": "Uses runtime operation execution",
+      "files": [],
+      "expectations": [
+        "Shows how to execute a runtime operation",
+        "Distinguishes runtime operations from source operations"
+      ]
+    },
+    {
+      "id": 64,
+      "prompt": "Set my Node.js app to 'none' build flavor and handle everything in the build hook.",
+      "expected_output": "Shows correct build config with custom hook",
+      "files": [],
+      "expectations": [
+        "Uses `build: { flavor: none }`",
+        "Defines a custom build hook",
+        "Explains that 'none' skips default build steps"
+      ]
+    },
+    {
+      "id": 65,
+      "prompt": "Enable Xdebug for remote debugging on my PHP development environment.",
+      "expected_output": "Shows how to enable Xdebug",
+      "files": [],
+      "expectations": [
+        "Shows Xdebug in the runtime configuration or via CLI",
+        "Suggests only enabling on development, not production"
+      ]
+    },
+    {
+      "id": 66,
+      "prompt": "Serve static files from /public alongside my Node.js API.",
+      "expected_output": "Shows web locations configuration",
+      "files": [],
+      "expectations": [
+        "Uses `web: { locations: ... }` configuration",
+        "Shows how to configure passthru for the Node.js app"
+      ]
+    },
+    {
+      "id": 67,
+      "prompt": "Set custom response headers (X-Frame-Options, CSP) on my app.",
+      "expected_output": "Shows headers in web locations config",
+      "files": [],
+      "expectations": [
+        "Shows custom headers in web locations configuration",
+        "Does NOT suggest configuring nginx.conf or .htaccess"
+      ]
+    },
+    {
+      "id": 68,
+      "prompt": "Open an SSH tunnel to access PostgreSQL from my local pgAdmin.",
+      "expected_output": "Uses tunnel:single or tunnel:open",
+      "files": [],
+      "expectations": [
+        "Uses `upsun tunnel:single` or `upsun tunnel:open`",
+        "Shows how to get local connection details",
+        "Does NOT suggest opening the database port publicly"
+      ]
+    },
+    {
+      "id": 69,
+      "prompt": "Set up a ClickHouse analytics database for my app.",
+      "expected_output": "Correct ClickHouse service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: clickhouse:` with a version",
+        "Defines it under `services:`",
+        "Adds a relationship"
+      ]
+    },
+    {
+      "id": 70,
+      "prompt": "Disable PHP's opcache extension for debugging on a dev environment.",
+      "expected_output": "Uses runtime.disabled_extensions",
+      "files": [],
+      "expectations": [
+        "Uses `runtime: { disabled_extensions: ['opcache'] }`",
+        "Does NOT suggest editing php.ini directly"
+      ]
+    },
+    {
+      "id": 71,
+      "prompt": "What is the cron hash (H) syntax and why should I use it?",
+      "expected_output": "Explains H syntax",
+      "files": [],
+      "expectations": [
+        "Explains that `H` randomizes timing to prevent resource contention",
+        "Shows `H * * * *` example",
+        "Explains it prevents simultaneous cron execution across apps"
+      ]
+    },
+    {
+      "id": 72,
+      "prompt": "Restart a stuck worker process without redeploying.",
+      "expected_output": "Shows SSH-based worker restart",
+      "files": [],
+      "expectations": [
+        "Shows `sv stop app` and `sv start app` via SSH",
+        "Uses `upsun ssh` with worker flag",
+        "Does NOT suggest redeploying as the only option"
+      ]
+    },
+    {
+      "id": 73,
+      "prompt": "Set up a Gotenberg service for document conversion.",
+      "expected_output": "Correct Gotenberg service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: gotenberg:` with a version",
+        "Defines it under `services:`"
+      ]
+    },
+    {
+      "id": 74,
+      "prompt": "Set up a project-level variable that applies to all environments.",
+      "expected_output": "Uses --level project",
+      "files": [],
+      "expectations": [
+        "Uses `upsun variable:create --level project`",
+        "Explains project-level vs environment-level"
+      ]
+    },
+    {
+      "id": 75,
+      "prompt": "Environment branching keeps failing due to insufficient resources. How do I branch with minimal resources?",
+      "expected_output": "Uses --resources-init=minimum",
+      "files": [],
+      "expectations": [
+        "Uses `upsun environment:branch --resources-init=minimum`",
+        "Lists minimum values (0.1 CPU, 64MB RAM for apps, 448MB for databases)"
+      ]
+    },
+    {
+      "id": 76,
+      "prompt": "View the current app configuration as deployed on Upsun.",
+      "expected_output": "Uses app:config-get",
+      "files": [],
+      "expectations": [
+        "Uses `upsun app:config-get`",
+        "Does NOT suggest reading local .upsun/config.yaml"
+      ]
+    },
+    {
+      "id": 77,
+      "prompt": "Set up a Mercure service for real-time updates in my Symfony app.",
+      "expected_output": "Correct Mercure service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: mercure:` with a version",
+        "Defines it under `services:`"
+      ]
+    },
+    {
+      "id": 78,
+      "prompt": "Copy files from my local machine to my Upsun environment.",
+      "expected_output": "Uses upsun scp",
+      "files": [],
+      "expectations": [
+        "Uses `upsun scp` or `upsun environment:scp`",
+        "Does NOT suggest manual scp with host/port configuration"
+      ]
+    },
+    {
+      "id": 79,
+      "prompt": "Set up a Vault KMS service for secrets management.",
+      "expected_output": "Correct Vault service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: vault-kms:` with a version",
+        "Defines it under `services:`"
+      ]
+    },
+    {
+      "id": 80,
+      "prompt": "Configure Solr search for my Drupal app.",
+      "expected_output": "Correct Solr service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: solr:` with a version",
+        "Defines it under `services:`",
+        "Adds a relationship"
+      ]
+    },
+    {
+      "id": 81,
+      "prompt": "Make an environment variable only available at build time for a frontend API key.",
+      "expected_output": "Uses --visible-build true --visible-runtime false",
+      "files": [],
+      "expectations": [
+        "Uses `--visible-build true --visible-runtime false`",
+        "Explains build-only variables are not available at runtime"
+      ]
+    },
+    {
+      "id": 82,
+      "prompt": "Debug why my GitHub integration isn't creating environments.",
+      "expected_output": "Uses integration:activities",
+      "files": [],
+      "expectations": [
+        "Uses `upsun integration:activities` to view logs",
+        "Suggests `upsun integration:validate` to check health"
+      ]
+    },
+    {
+      "id": 83,
+      "prompt": "Configure rewrite rules for clean URLs in my PHP app with document root /public.",
+      "expected_output": "Shows web locations with passthru",
+      "files": [],
+      "expectations": [
+        "Uses web locations with `passthru: '/index.php'`",
+        "Sets `root: 'public'`",
+        "Does NOT suggest .htaccess or nginx rewrite rules"
+      ]
+    },
+    {
+      "id": 84,
+      "prompt": "Set the cron shutdown_timeout to 30 seconds for a long-running cleanup job.",
+      "expected_output": "Shows shutdown_timeout in cron config",
+      "files": [],
+      "expectations": [
+        "Uses `shutdown_timeout: 30`",
+        "Explains this is time before SIGKILL after SIGTERM",
+        "Mentions default is 10 seconds"
+      ]
+    },
+    {
+      "id": 85,
+      "prompt": "Clone an Upsun project to my local machine for the first time.",
+      "expected_output": "Uses upsun get command",
+      "files": [],
+      "expectations": [
+        "Uses `upsun get PROJECT_ID` or `upsun project:get`",
+        "Does NOT suggest `git clone` as the primary method"
+      ]
+    },
+    {
+      "id": 86,
+      "prompt": "What's the difference between upsun push and git push?",
+      "expected_output": "Explains the differences",
+      "files": [],
+      "expectations": [
+        "Explains `upsun push` pushes to Upsun remote with extra options",
+        "Mentions options like `--activate`, `--no-wait`, `--resources-init`",
+        "Explains `git push` works with source integrations"
+      ]
+    },
+    {
+      "id": 87,
+      "prompt": "Set up Memcached as a caching service for my PHP app.",
+      "expected_output": "Correct Memcached service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: memcached:` with a version",
+        "Defines it under `services:`"
+      ]
+    },
+    {
+      "id": 88,
+      "prompt": "Set up InfluxDB for time-series data in my monitoring app.",
+      "expected_output": "Correct InfluxDB service configuration",
+      "files": [],
+      "expectations": [
+        "Uses `type: influxdb:` with a version",
+        "Defines it under `services:`"
+      ]
+    },
+    {
+      "id": 89,
+      "prompt": "Initialize a new Upsun project in my existing repository.",
+      "expected_output": "Uses upsun project:init",
+      "files": [],
+      "expectations": [
+        "Uses `upsun project:init`",
+        "Explains it creates .upsun/config.yaml"
+      ]
+    },
+    {
+      "id": 90,
+      "prompt": "Clear the build cache. My builds use stale dependencies.",
+      "expected_output": "Uses project:clear-build-cache",
+      "files": [],
+      "expectations": [
+        "Uses `upsun project:clear-build-cache`",
+        "Mentions the next deployment does a clean build"
+      ]
+    },
+    {
+      "id": 91,
+      "prompt": "Configure PHP request_terminate_timeout and sizing_hints for my high-traffic app.",
+      "expected_output": "Shows PHP runtime config with sizing hints",
+      "files": [],
+      "expectations": [
+        "Uses `runtime: { request_terminate_timeout: ... }` syntax",
+        "Shows `sizing_hints: { request_memory: ..., reserved_memory: ... }`",
+        "Places under the `runtime:` property in the PHP app config"
+      ]
+    },
+    {
+      "id": 92,
+      "prompt": "Enable tab completion for the Upsun CLI in my shell.",
+      "expected_output": "Uses the completion command",
+      "files": [],
+      "expectations": [
+        "Uses `eval $(upsun completion)` or similar"
+      ]
+    },
+    {
+      "id": 93,
+      "prompt": "Prevent the CLI from prompting for input in my CI/CD pipeline.",
+      "expected_output": "Uses UPSUN_CLI_NO_INTERACTION",
+      "files": [],
+      "expectations": [
+        "Sets `UPSUN_CLI_NO_INTERACTION=1`",
+        "May mention `--yes` or `--no-interaction` flags"
+      ]
+    },
+    {
+      "id": 94,
+      "prompt": "Set up a Go 1.24 app with PostgreSQL and Redis.",
+      "expected_output": "Complete config with correct type strings",
+      "files": [],
+      "expectations": [
+        "Uses `type: 'golang:1.24'`",
+        "Uses `type: postgresql:` and `type: redis:` for services",
+        "Has proper relationships"
+      ]
+    },
+    {
+      "id": 95,
+      "prompt": "My build is running out of disk space. How do I fix it?",
+      "expected_output": "References build resources",
+      "files": [],
+      "expectations": [
+        "References build resources configuration",
+        "Mentions ~8GB combined temp/cache space",
+        "May suggest `upsun project:clear-build-cache`"
+      ]
+    },
+    {
+      "id": 96,
+      "prompt": "Configure a .NET 8.0 application on Upsun.",
+      "expected_output": "Shows correct .NET type string",
+      "files": [],
+      "expectations": [
+        "Uses `type: 'dotnet:8.0'` (not 'dotnetcore' or 'aspnet')",
+        "Shows correct .upsun/config.yaml structure"
+      ]
+    },
+    {
+      "id": 97,
+      "prompt": "Check my Upsun CLI version and update it.",
+      "expected_output": "Shows version check and update",
+      "files": [],
+      "expectations": [
+        "Uses `upsun --version` or `upsun -V`"
+      ]
+    },
+    {
+      "id": 98,
+      "prompt": "Set up a Rust application on Upsun with a custom build process.",
+      "expected_output": "Shows correct Rust type string",
+      "files": [],
+      "expectations": [
+        "Uses `type: 'rust:1'`",
+        "Defines a custom build hook",
+        "Sets `build: { flavor: none }`"
+      ]
+    },
+    {
+      "id": 99,
+      "prompt": "Prevent Google from indexing my staging environment.",
+      "expected_output": "Shows search engine visibility settings",
+      "files": [],
+      "expectations": [
+        "References search engine visibility feature",
+        "Mentions non-production environments have indexing disabled by default"
+      ]
+    },
+    {
+      "id": 100,
+      "prompt": "Complete config for a multi-app project: PHP 8.4 API, Node.js 22 frontend, shared PostgreSQL 16, and Redis 7.2.",
+      "expected_output": "Complete multi-app .upsun/config.yaml",
+      "files": [],
+      "expectations": [
+        "Defines two apps under `applications:` with different `source.root` paths",
+        "Uses `type: 'php:8.4'` and `type: 'nodejs:22'`",
+        "Uses `type: postgresql:16` and `type: redis:7.2` under `services:`",
+        "Both apps have relationships to shared services",
+        "Single .upsun/config.yaml file"
+      ]
+    }
+  ]
+}

@@ -10,48 +10,53 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on PRs from the same repository, not forks.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    
+
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [test_scenarios.py, test_triggers.py]
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
     - name: Install uv
       uses: astral-sh/setup-uv@v5
-    
+
     - name: Authenticate to Google Cloud
       id: auth
       uses: google-github-actions/auth@v2
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-    
+
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
-    
+
     - name: Install Claude Code
       run: |
         curl -fsSL https://claude.ai/install.sh | bash
         echo "$HOME/.local/bin" >> $GITHUB_PATH
-    
+
     - name: Install Upsun CLI
       run: |
         curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
         echo "$HOME/.platformsh/bin" >> $GITHUB_PATH
-    
+
     - name: Install using-upsun skill
       run: |
         mkdir -p "$HOME/.claude/skills/"
         cp -r plugins/upsun/skills/. "$HOME/.claude/skills/"
-    
+
     - name: Install dependencies
       working-directory: ./evals
       run: |
         uv sync
-    
+
     - name: Run evaluations
       working-directory: ./evals
       env:
@@ -70,16 +75,17 @@ jobs:
           --model=gemini-3.1-pro-preview \
           --project=${{ secrets.GCP_PROJECT_ID }} \
           --location=global
-        deepeval test run . \
-          --junitxml=results.xml \
-          --html=report.html \
+        SUITE_NAME=$(basename "${{ matrix.suite }}" .py)
+        deepeval test run ${{ matrix.suite }} \
+          --junitxml=${SUITE_NAME}-results.xml \
+          --html=${SUITE_NAME}-report.html \
           --self-contained-html
-    
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: deepeval-results
+        name: deepeval-${{ matrix.suite }}
         path: |
-          evals/results.xml
-          evals/report.html
+          evals/*-results.xml
+          evals/*-report.html

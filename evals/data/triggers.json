@@ -1,0 +1,82 @@
+[
+	{
+		"query": "my deploy to upsun has been stuck for 15 minutes, the build log just stops at 'Installing dependencies'. the project id is abc123 and im on the feature/auth branch. how do i unstick it?",
+		"should_trigger": true
+	},
+	{
+		"query": "I need to branch off main to create a hotfix environment on Upsun with all the production data copied over, then deploy a quick patch to the payment service",
+		"should_trigger": true
+	},
+	{
+		"query": "can you help me set up redis and elasticsearch as services in my .upsun/config.yaml? I think the syntax changed in the latest CLI version and my old config isn't working",
+		"should_trigger": true
+	},
+	{
+		"query": "before I run this migration I want to backup my postgres database on Upsun production and know how to roll it back if things go sideways. project is on eu-4 region",
+		"should_trigger": true
+	},
+	{
+		"query": "our upsun containers keep running out of memory during peak traffic. how do I check the current resource allocation and bump up the memory on the web container? maybe set up autoscaling too",
+		"should_trigger": true
+	},
+	{
+		"query": "I need to configure environment variables in Upsun — specifically some API keys that should be different between staging and prod. one of them is a stripe secret key so it needs to be hidden",
+		"should_trigger": true
+	},
+	{
+		"query": "how do I add a custom domain to my Upsun project and get the SSL cert working? the domain is app.example.com and it's for the production environment",
+		"should_trigger": true
+	},
+	{
+		"query": "i want to pull a db dump from my upsun production environment to use locally for debugging. also need to SSH into the container to check some log files",
+		"should_trigger": true
+	},
+	{
+		"query": "we have like 8 old feature branches on Upsun that nobody's using anymore and they're costing us money. help me list them and clean up the ones older than 2 months",
+		"should_trigger": true
+	},
+	{
+		"query": "my upsun environment:push keeps failing with a permission error. I ran upsun auth:info and it shows my account but I think I might not have the right role on this project",
+		"should_trigger": true
+	},
+	{
+		"query": "help me deploy my Next.js app to Vercel. I already have a vercel.json but the build keeps timing out and I need to increase the memory limit for the serverless functions",
+		"should_trigger": false
+	},
+	{
+		"query": "I need to set up a PostgreSQL database in Docker for my local development environment. can you write me a docker-compose.yml with postgres 16 and pgadmin?",
+		"should_trigger": false
+	},
+	{
+		"query": "how do I configure nginx as a reverse proxy for my Node.js app? I need to set up SSL termination with certbot and handle WebSocket connections",
+		"should_trigger": false
+	},
+	{
+		"query": "write me a bash script that creates a MySQL backup, compresses it with gzip, uploads it to S3, and deletes backups older than 30 days. this runs on a plain EC2 instance",
+		"should_trigger": false
+	},
+	{
+		"query": "I'm trying to scale my Kubernetes deployment — the HPA isn't triggering even though CPU is at 85%. can you check my HPA config and suggest fixes?",
+		"should_trigger": false
+	},
+	{
+		"query": "help me set up environment variables in my GitHub Actions workflow for a Django app. I need different secrets for the staging and production deployments to AWS",
+		"should_trigger": false
+	},
+	{
+		"query": "my Heroku app is crashing on deploy. the logs show an H10 error and the web process is failing to bind to $PORT. I'm using a Python Flask app with gunicorn",
+		"should_trigger": false
+	},
+	{
+		"query": "can you help me configure Redis caching in my Laravel app? I need to set up the Redis connection in config/database.php and update the .env file with the correct REDIS_HOST",
+		"should_trigger": false
+	},
+	{
+		"query": "I want to set up a CI/CD pipeline with GitLab CI that runs tests, builds a Docker image, pushes to a registry, and deploys to a DigitalOcean droplet via SSH",
+		"should_trigger": false
+	},
+	{
+		"query": "my platform.sh project needs to be migrated to Upsun. what are the differences in the config format and CLI commands between the two? do I need to change my .platform.app.yaml?",
+		"should_trigger": true
+	}
+]

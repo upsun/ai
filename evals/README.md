@@ -1,47 +1,56 @@
 # Evaluations
 
-DeepEval tests for evaluating AI coding agent skills.
+DeepEval tests for the Upsun CLI agent skill.
+
+## Test suites
+
+**Scenario tests** (`test_scenarios.py`): 10 end-to-end tests that run Claude Code with a realistic user prompt and evaluate the output against expected behavior using GEval. Scenarios cover deployments, backups, scaling, SSH, domains, variables, environment cleanup, and database operations.
+
+**Trigger tests** (`test_triggers.py`): 20 classification tests (10 positive, 10 negative) that verify the skill activates for Upsun-related prompts and stays silent for unrelated platforms (Vercel, Heroku, Docker, Kubernetes, etc.).
+
+Test data lives in `data/scenarios.json` and `data/triggers.json`.
 
 ## Prerequisites
 
-1. **Virtual Environment**: Activate the Python virtual environment
+1. **Python environment**:
    ```bash
-   source .venv/bin/activate.fish  # for fish shell
-   # or
-   source .venv/bin/activate       # for bash/zsh
+   uv sync
+   source .venv/bin/activate
    ```
 
-2. **AI Gateway Environment**: Set up environment variables for AI Gateway
+2. **AI Gateway** (for Gemini-based evaluation):
    ```bash
    eval "$(ai-gateway env)"
-   ```
-
-3. **Google Cloud Authentication**: Authenticate for Vertex AI/Gemini access
-   ```bash
    gcloud auth application-default login
    ```
 
+3. **Claude Code CLI** must be installed and on PATH.
 
-## Running Tests
+4. **Upsun CLI** must be installed (skill under test).
 
-To run all tests:
+## Running tests
+
+All tests:
 ```bash
-deepeval test run
+deepeval test run .
 ```
 
-To run a specific test:
+Scenarios only:
 ```bash
-deepeval test run test_login.py
+deepeval test run test_scenarios.py
 ```
 
-## Test Structure
+Triggers only:
+```bash
+deepeval test run test_triggers.py
+```
 
-Tests use:
-- **DeepEval**: Testing framework for LLM applications
-- **GEval**: Metric for evaluating outputs using Gemini 3.1 Pro (`gemini-3.1-pro-preview`)
-- **Claude Code CLI**: The agent being evaluated
+Single scenario by id:
+```bash
+deepeval test run test_scenarios.py -k "scenario-4"
+```
 
-Each test:
-1. Executes Claude Code CLI with a prompt
-2. Captures the output
-3. Evaluates it against expected behavior using LLM-based metrics
+With HTML report:
+```bash
+deepeval test run . --html=report.html --self-contained-html
+```

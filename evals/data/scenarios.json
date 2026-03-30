@@ -1,0 +1,133 @@
+{
+	"skill_name": "upsun",
+	"evals": [
+		{
+			"id": 1,
+			"prompt": "I just pushed a commit and the deployment seems stuck. The activity list shows it's been running for 20 minutes. Help me figure out what's going on and how to fix it.",
+			"expected_output": "Agent should diagnose a stuck deployment using activity:log, check build/deploy phases, and suggest remediation (redeploy or cancel)",
+			"files": [],
+			"expectations": [
+				"Uses `upsun activity:list` or `upsun activity:log` to inspect the stuck deployment",
+				"Distinguishes between build phase and deploy phase when diagnosing the issue",
+				"Suggests `upsun environment:redeploy` or canceling the stuck activity as a remediation step",
+				"Does NOT suggest generic git or Docker troubleshooting unrelated to Upsun"
+			]
+		},
+		{
+			"id": 2,
+			"prompt": "I need to create a staging environment that's an exact copy of production, including the database. My production environment is called 'main'. Walk me through it.",
+			"expected_output": "Agent should use environment:branch which clones data, explain the parent-child relationship, and mention resource implications",
+			"files": [],
+			"expectations": [
+				"Uses `upsun environment:branch` (not just `git checkout -b`) to create the environment",
+				"Specifies `main` as the parent so data is cloned",
+				"Explains that branching in Upsun copies the full environment including database data",
+				"Mentions resource allocation or cost implications of the new environment",
+				"Suggests activating the environment if needed with `upsun environment:activate`"
+			]
+		},
+		{
+			"id": 3,
+			"prompt": "Add a Redis 7.2 instance to my project for caching. I'm running a PHP Symfony app. Show me exactly what to change and how to deploy it.",
+			"expected_output": "Agent should modify .upsun/config.yaml to add Redis service, show the relationship configuration, and deploy",
+			"files": [],
+			"expectations": [
+				"Modifies the services section in `.upsun/config.yaml` to add a Redis service with the correct type syntax",
+				"Uses the correct service type format for Redis (e.g., `redis:7.2`)",
+				"Configures the relationship in the app section so the app can reach Redis",
+				"Mentions using `upsun push` or committing and pushing to deploy the change",
+				"Does NOT suggest installing Redis locally or via apt/Docker"
+			]
+		},
+		{
+			"id": 4,
+			"prompt": "I need to take a database backup of my production environment before doing a risky migration. Then if something goes wrong, I want to restore it. Show me the full workflow.",
+			"expected_output": "Agent should use backup:create, verify with backup:list, and show the restore path",
+			"files": [],
+			"expectations": [
+				"Uses `upsun backup:create` targeting the production environment",
+				"Uses `upsun backup:list` to verify the backup was created successfully",
+				"Shows how to restore with `upsun backup:restore` and the backup ID",
+				"Warns that restoring a backup replaces current data and may cause downtime",
+				"Suggests doing the backup BEFORE the migration, not after"
+			]
+		},
+		{
+			"id": 5,
+			"prompt": "My app is getting slow and I think it needs more CPU. How do I check current resource usage and scale up the web container?",
+			"expected_output": "Agent should check metrics, show current resources, and use resources:set to scale",
+			"files": [],
+			"expectations": [
+				"Uses `upsun metrics:cpu` or `upsun metrics:memory` to check current utilization",
+				"Uses `upsun resources:get` to show current container size allocation",
+				"Uses `upsun resources:set` to increase CPU/memory for the web container",
+				"Mentions available container profiles or `upsun resources:size:list` to show options",
+				"Does NOT suggest modifying server configuration files directly"
+			]
+		},
+		{
+			"id": 6,
+			"prompt": "I need to SSH into my production container to debug something. Also, I want to run a one-off database query to check a specific user record.",
+			"expected_output": "Agent should show SSH access and db:sql for running queries",
+			"files": [],
+			"expectations": [
+				"Uses `upsun ssh` to connect to the production container",
+				"Specifies the environment and app if needed (`--environment main --app myapp`)",
+				"Uses `upsun db:sql` for running the database query interactively",
+				"Warns about running queries on production or suggests doing it on a branch instead"
+			]
+		},
+		{
+			"id": 7,
+			"prompt": "I want to set up a custom domain 'api.mycompany.com' on my production environment and make sure HTTPS is working. What's the process?",
+			"expected_output": "Agent should add the domain, configure DNS, and verify TLS",
+			"files": [],
+			"expectations": [
+				"Uses `upsun domain:add` to add the custom domain",
+				"Explains the DNS configuration needed (CNAME or A record pointing to Upsun)",
+				"Mentions that Upsun provides automatic Let's Encrypt TLS certificates",
+				"Suggests verifying with `upsun domain:list` after configuration",
+				"Does NOT suggest manually configuring nginx or Apache for TLS"
+			]
+		},
+		{
+			"id": 8,
+			"prompt": "I have environment variables with API keys that need to be different between staging and production. How do I manage secrets per environment in Upsun?",
+			"expected_output": "Agent should use variable:create with proper scoping and sensitivity flags",
+			"files": [],
+			"expectations": [
+				"Uses `upsun variable:create` or `upsun variable:update` to set environment-specific variables",
+				"Uses the `--sensitive true` flag for API keys and secrets",
+				"Explains environment-level vs project-level variable scoping",
+				"Shows how to set different values per environment (e.g., `--environment staging`)",
+				"Does NOT suggest putting secrets in .env files committed to git"
+			]
+		},
+		{
+			"id": 9,
+			"prompt": "We have 5 old feature branch environments that are no longer needed. They're eating up resources. Help me clean them up.",
+			"expected_output": "Agent should list environments, identify inactive ones, deactivate and/or delete them",
+			"files": [],
+			"expectations": [
+				"Uses `upsun environment:list` to show all environments and their status",
+				"Uses `upsun environment:deactivate` or `upsun environment:delete` to clean up",
+				"Warns that deleting environments destroys all data in them",
+				"Suggests deactivating instead of deleting if the branches might be needed later",
+				"Mentions the resource/cost savings from removing unused environments"
+			]
+		},
+		{
+			"id": 10,
+			"prompt": "I need to pull down a copy of my production database to my local machine for development. How do I do that with the Upsun CLI?",
+			"expected_output": "Agent should use db:dump to export and explain how to import locally",
+			"files": [],
+			"expectations": [
+				"Uses `upsun db:dump` to export the database from the production environment",
+				"Specifies the environment (`--environment main` or similar)",
+				"Explains how to import the dump file into a local database",
+				"Mentions the relationship name if the project has multiple databases",
+				"Suggests using a branch environment instead of production for safety"
+			]
+		}
+	]
+}
