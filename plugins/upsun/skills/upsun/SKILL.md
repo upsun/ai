@@ -36,6 +36,18 @@ scoop bucket add platformsh https://github.com/platformsh/homebrew-tap.git
 scoop install upsun
 ```
 
+To upgrade an existing installation:
+```bash
+# macOS
+brew upgrade upsun-cli
+
+# Linux / WSL
+upsun self:update
+
+# Windows (Scoop)
+scoop update upsun
+```
+
 Then authenticate:
 ```bash
 upsun login
@@ -57,9 +69,9 @@ See [references/config.md](references/config.md) for a minimal working template 
 ### 4. Set initial resources
 
 ```bash
-upsun resources:set --size myapp:S
+upsun resources:set
 ```
-Size options: XS / S / M / L / XL / 2XL. Start small; you can scale later.
+Run without flags to get an interactive prompt. Set CPU and memory per app/service. Start small; you can adjust later.
 
 ### 5. Deploy
 
@@ -107,7 +119,6 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first.
 ### Deploy / Redeploy
 - Never assume `main` is production — confirm
 - Running database migrations? → recommend `stopstart` deployment strategy and a pre-deploy backup
-- Production deploy? → verify a recent backup exists; offer to create one before proceeding
 - After deploy, offer to tail logs: `upsun logs --tail`
 
 ### Branch / Merge (feature environments)
@@ -142,8 +153,8 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first.
 - Always create a safety backup of the current state before restoring
 
 ### Scale / Resources
-- List apps, workers, and services with current sizes first
-- Target sizes: XS / S / M / L / XL / 2XL
+- Run `upsun resources:get` to show current CPU/memory allocations for all apps, workers, and services
+- Use `upsun resources:set` to adjust; it will prompt for CPU and memory values
 - Offer autoscaling: min/max replicas and target CPU %
 
 ### Domain
@@ -170,7 +181,6 @@ Read-only operations (`list`, `info`, `get`, `logs --tail`, `ssh` for inspection
 
 ## Safety rules
 
-- Production deploy without a recent backup → create one first; confirm before proceeding
 - `backup:restore` → create a safety backup of current state first, then confirm
 - `environment:delete` → warn explicitly: "This is permanent and cannot be undone"
 - `FLUSHALL / DROP TABLE / DELETE FROM` → require explicit written confirmation every time

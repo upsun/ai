@@ -9,7 +9,7 @@ Full config reference: https://developer.upsun.com/docs/get-started/here/configu
 ```yaml
 applications:
   myapp:
-    type: 'nodejs:22'        # or php:8.3, python:3.12, ruby:3.3, etc.
+    type: 'nodejs:24'        # check https://meta.upsun.com/images for current supported versions
     hooks:
       build: 'npm install && npm run build'
     web:
@@ -84,25 +84,13 @@ routes:
 
 ---
 
-## Common `type` values
+## Available runtimes, services and versions
 
-| Runtime   | Value            |
-|-----------|------------------|
-| Node.js   | `nodejs:22`      |
-| PHP       | `php:8.3`        |
-| Python    | `python:3.12`    |
-| Ruby      | `ruby:3.3`       |
-| Go        | `golang:1.23`    |
-| Java      | `java:21`        |
+Canonical source (always up to date): https://meta.upsun.com/images
 
-| Service    | Value              |
-|------------|--------------------|
-| PostgreSQL | `postgresql:16`    |
-| MySQL      | `mysql:11.4`       |
-| Redis      | `redis:7.2`        |
-| MongoDB    | `mongodb:7.0`      |
-| OpenSearch | `opensearch:2`     |
-| RabbitMQ   | `rabbitmq:3.13`    |
+Each image entry has a `versions` map with a `status` of `supported`, `deprecated`, `retired`, or `decommissioned`.
+Use only `supported` (or `deprecated` if a specific older version is required).
+Services have `"service": true`; runtimes have `"service": false`.
 
 ---
 
