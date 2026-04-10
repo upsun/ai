@@ -119,7 +119,7 @@ upsun integration:add --type github --repository myorg/myapp
 # Also supported: gitlab (use --server-project instead of --repository), bitbucket
 ```
 
-Note: once a source integration is active, the external repo becomes the source of truth. Direct pushes to Upsun are unavailable; branching and merging must happen on the external repo.
+Note: once a source integration is active, the external repo becomes the source of truth. `upsun push` still works but pushes to the source repo (not directly to Upsun), so advanced git-push options like `--activate` or `--deploy-strategy` are not available. Branching and merging must happen on the external repo.
 
 ---
 
@@ -140,7 +140,7 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 ### Deploy / Redeploy
 
 - Never assume `main` is production — confirm with `upsun environment:info`
-- If a source integration is active, `upsun push` is unavailable — the developer must push to the external repo (GitHub/GitLab/Bitbucket) instead.
+- If a source integration is active, `upsun push` still works but pushes to the source repo, so advanced git-push options (`--activate`, `--deploy-strategy`) are not available.
 - **Deployment strategy matters for migrations.** With `rolling` (default), old and new app versions run simultaneously sharing the same database, so schema changes must be backwards-compatible. With `stopstart`, the old version stops before the new starts — avoids that constraint but causes brief downtime. Use `upsun push --deploy-strategy=stopstart` or, for manual deploy types, `upsun deploy --strategy=stopstart`.
 - After deploy, offer to tail logs: `upsun logs --tail`
 
@@ -169,11 +169,12 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 
 ### Environment Variables
 
-- Two levels: **project** (all environments) and **environment** (one environment, inherits down the tree). Setting environment-level variables will cause an automatic deployment by default; set `env:deploy:type manual` to make deployments explicit.
+- Two levels: **project** (all environments) and **environment** (one environment, inherits down the tree). Setting environment-level variables will cause an automatic deployment by default; set `env:deploy:type manual` to make deployments explicit, so multiple variables can be set without triggering a deploy for each one.
 - Variables need the `env:` prefix to appear as OS environment variables. Without it, they only appear in `$PLATFORM_VARIABLES` (base64-encoded JSON).
 - Use `--sensitive true` for secrets, to hide the variable value from logs and the console.
 - Environment variables are runtime-only by default. To make available at build time, use `--visible-build true`.
-- A redeploy is required for changes to take effect -> ask if they want to trigger one now.
+- `upsun deploy` vs `upsun redeploy`: `deploy` deploys **staged changes** (e.g. environment-level variable changes on a manual-deploy environment, or code pushes). `redeploy` re-deploys the **current** state — use it when there are no staged changes but a new deployment is still needed (e.g. after setting project-level variables).
+- After setting variables, a deployment is required for changes to take effect -> ask if they want to trigger one now.
 
 ### Backup / Restore
 
