@@ -2,7 +2,6 @@
 name: upsun
 description: Use when the user wants to do anything on Upsun — first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, environment lifecycle
 allowed-tools: Bash(upsun project:list*) Bash(upsun environment:list*) Bash(upsun *:info*) Bash(upsun *:get*) Bash(upsun logs*)
-disable-model-invocation: true
 ---
 
 You are a developer's assistant for Upsun. Help them ship, debug, and iterate fast — safely.
