@@ -8,7 +8,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 
 | Component | Location | Description |
 |-----------|----------|-------------|
-| **Skills** | `plugins/upsun/skills/` | `using-upsun` – 130+ CLI commands for deployments, environments, backups, databases, and more |
+| **Skills** | `plugins/upsun/skills/` | `upsun` – workflow guide for deployments, environments, backups, databases, and more, with a config reference |
 | **MCP Server** | `plugins/upsun/.mcp.json` | Natural-language infrastructure management via [Upsun MCP](https://docs.upsun.com/get-started/ai/using-the-mcp.html) |
 
 ## Installation
@@ -19,13 +19,13 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
    
    ```bash
    # Install Upsun CLI (if not already installed)
-   curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
+   curl -fsSL https://raw.githubusercontent.com/upsun/cli/main/installer.sh | bash
 
    # Or via brew
-   brew install platformsh/tap/upsun-cli
+   brew install upsun/tap/upsun-cli
 
    # Authenticate
-   upsun auth:browser-login
+   upsun login
    ```
 
 2. **AI coding agent or IDE** – e.g. [Claude Code](https://claude.ai/code), Cursor, or other MCP-compatible tools
@@ -53,13 +53,13 @@ After installation, the skill is immediately available to your AI agent. Ask it 
 
 ### Alternative: Skills only (manual)
 
-To install just the skills without the full plugin, copy the contents of `plugins/upsun/skills/` into your agent's skills directory so that the `using-upsun/` folder ends up directly inside it (for example, at `~/.claude/skills/using-upsun/` for Claude Code). This includes all current and future skills in the repo.
+To install just the skills without the full plugin, copy the contents of `plugins/upsun/skills/` into your agent's skills directory so that the `upsun/` folder ends up directly inside it (for example, at `~/.claude/skills/upsun/` for Claude Code). This includes all current and future skills in the repo.
 
 **Claude Code:**
 
 ```bash
 git clone https://github.com/upsun/ai.git /tmp/upsun-ai
-# Copy the contents of the skills directory so that ~/.claude/skills/using-upsun/ is created
+# Copy the contents of the skills directory so that ~/.claude/skills/upsun/ is created
 cp -r /tmp/upsun-ai/plugins/upsun/skills/. ~/.claude/skills/
 ```
 
@@ -148,28 +148,17 @@ The skill activates automatically when you mention Upsun-related tasks:
 
 ### Skill documentation
 
-- **[SKILL.md](plugins/upsun/skills/using-upsun/SKILL.md)** – Main skill navigation and quick reference
-- **[references/](plugins/upsun/skills/using-upsun/references/)** - Detailed command documentation
-  - [COMMAND-INDEX.md](plugins/upsun/skills/using-upsun/references/COMMAND-INDEX.md) - Alphabetical command reference
-  - [environments.md](plugins/upsun/skills/using-upsun/references/environments.md) - Environment lifecycle
-  - [deployments.md](plugins/upsun/skills/using-upsun/references/deployments.md) - Deployment patterns
-  - [backups.md](plugins/upsun/skills/using-upsun/references/backups.md) - Backup/restore procedures
-  - [services-databases.md](plugins/upsun/skills/using-upsun/references/services-databases.md) - Database operations
-  - [resources-scaling.md](plugins/upsun/skills/using-upsun/references/resources-scaling.md) - Resource management
-  - [access-security.md](plugins/upsun/skills/using-upsun/references/access-security.md) - Security and access control
-  - [integration-variables.md](plugins/upsun/skills/using-upsun/references/integration-variables.md) - Configuration
-  - [development-tools.md](plugins/upsun/skills/using-upsun/references/development-tools.md) - Developer tools
-  - [projects-organizations.md](plugins/upsun/skills/using-upsun/references/projects-organizations.md) - Project management
-  - [troubleshooting.md](plugins/upsun/skills/using-upsun/references/troubleshooting.md) - Common issues
+- **[SKILL.md](plugins/upsun/skills/upsun/SKILL.md)** – Workflow guide and common operations
+- **[references/config.md](plugins/upsun/skills/upsun/references/config.md)** – `.upsun/config.yaml` reference templates
 
 ### Skill architecture
 
-The `using-upsun` skill uses a progressive disclosure architecture:
+The `upsun` skill uses a progressive disclosure architecture:
 
-1. **SKILL.md** (entry point) - Workflow navigation and common operations
-2. **references/** (on-demand) - Detailed documentation loaded as needed
+1. **SKILL.md** (entry point) – Workflow navigation and common operations
+2. **references/** (on-demand) – Detailed documentation loaded as needed
 
-This design minimizes context usage while providing comprehensive coverage.
+This design minimizes context usage.
 
 ### Plugin structure
 
@@ -181,14 +170,14 @@ plugins/upsun/
 │   └── plugin.json        # Plugin manifest
 ├── .mcp.json              # MCP server configuration
 └── skills/
-    └── using-upsun/       # Upsun skill
+    └── upsun/             # Upsun skill
 ```
 
 This structure means the plugin is self-contained and reusable — any agent that installs `upsun@upsun` gets all components automatically.
 
 ### Adding documentation
 
-1. Update existing reference files in `plugins/upsun/skills/using-upsun/references/`
+1. Update existing reference files in `plugins/upsun/skills/upsun/references/`
 2. Add cross-references to related documents
 3. Update `SKILL.md` if adding commonly-used commands
 4. Test that your agent can find and use the new documentation
