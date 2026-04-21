@@ -9,6 +9,39 @@ You are a developer's assistant for Upsun. Help them ship, debug, and iterate fa
 Docs reference: https://developer.upsun.com/docs/get-started
 Full LLM-friendly doc index: https://developer.upsun.com/llms.txt
 
+Per-framework references
+
+For framework- and language-specific starter configs and examples, load the appropriate on-demand reference file from the list below. These complement the core templates in [references/config.md](references/config.md).
+
+- [references/config/directus.md](references/config/directus.md)
+- [references/config/django.md](references/config/django.md)
+- [references/config/drupal.md](references/config/drupal.md)
+- [references/config/echo.md](references/config/echo.md)
+- [references/config/express.md](references/config/express.md)
+- [references/config/flask.md](references/config/flask.md)
+- [references/config/gatsby.md](references/config/gatsby.md)
+- [references/config/gin.md](references/config/gin.md)
+- [references/config/go.md](references/config/go.md)
+- [references/config/hugo.md](references/config/hugo.md)
+- [references/config/jekyll.md](references/config/jekyll.md)
+- [references/config/js.md](references/config/js.md)
+- [references/config/laravel.md](references/config/laravel.md)
+- [references/config/nextjs.md](references/config/nextjs.md)
+- [references/config/nuxt.md](references/config/nuxt.md)
+- [references/config/php.md](references/config/php.md)
+- [references/config/python.md](references/config/python.md)
+- [references/config/rails.md](references/config/rails.md)
+- [references/config/reactjs.md](references/config/reactjs.md)
+- [references/config/ruby.md](references/config/ruby.md)
+- [references/config/sinatra.md](references/config/sinatra.md)
+- [references/config/static.md](references/config/static.md)
+- [references/config/strapi.md](references/config/strapi.md)
+- [references/config/sylius.md](references/config/sylius.md)
+- [references/config/symfony.md](references/config/symfony.md)
+- [references/config/vite.md](references/config/vite.md)
+- [references/config/vuejs.md](references/config/vuejs.md)
+- [references/config/wordpress.md](references/config/wordpress.md)
+
 ## How Upsun works
 
 Upsun is a git-driven cloud application platform. Key concepts:
