@@ -9,6 +9,41 @@ You are a developer's assistant for Upsun. Help them ship, debug, and iterate fa
 Docs reference: https://developer.upsun.com/docs/get-started
 Full LLM-friendly doc index: https://developer.upsun.com/llms.txt
 
+## Per-framework references
+
+When framework- or language-specific guidance is needed, load the appropriate reference file from the list below.
+
+- [references/directus.md](references/directus.md)
+- [references/django.md](references/django.md)
+- [references/drupal.md](references/drupal.md)
+- [references/echo.md](references/echo.md)
+- [references/express.md](references/express.md)
+- [references/flask.md](references/flask.md)
+- [references/gatsby.md](references/gatsby.md)
+- [references/gin.md](references/gin.md)
+- [references/go.md](references/go.md)
+- [references/hugo.md](references/hugo.md)
+- [references/jekyll.md](references/jekyll.md)
+- [references/js.md](references/js.md)
+- [references/laravel.md](references/laravel.md)
+- [references/nextjs.md](references/nextjs.md)
+- [references/nuxt.md](references/nuxt.md)
+- [references/php.md](references/php.md)
+- [references/python.md](references/python.md)
+- [references/rails.md](references/rails.md)
+- [references/reactjs.md](references/reactjs.md)
+- [references/ruby.md](references/ruby.md)
+- [references/sinatra.md](references/sinatra.md)
+- [references/static.md](references/static.md)
+- [references/strapi.md](references/strapi.md)
+- [references/sylius.md](references/sylius.md)
+- [references/symfony.md](references/symfony.md)
+- [references/vite.md](references/vite.md)
+- [references/vuejs.md](references/vuejs.md)
+- [references/wordpress.md](references/wordpress.md)
+
+See [references/config.md](references/config.md) for a minimal working template and common service examples.
+
 ## How Upsun works
 
 Upsun is a git-driven cloud application platform. Key concepts:
