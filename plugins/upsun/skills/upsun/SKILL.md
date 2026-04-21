@@ -57,7 +57,7 @@ To upgrade an existing installation:
 brew upgrade upsun/tap/upsun-cli
 
 # Linux / WSL
-upsun self:update
+curl -fsSL https://raw.githubusercontent.com/upsun/cli/main/installer.sh | bash
 
 # Windows (Scoop)
 scoop update upsun
