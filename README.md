@@ -96,7 +96,11 @@ For global permissions, edit `~/.claude/settings.json` with the same structure. 
 
 ### MCP Server (Optional)
 
-The plugin includes the [Upsun MCP Server](https://docs.upsun.com/get-started/ai/using-the-mcp.html) for natural-language infrastructure management. To enable it, set the `UPSUN_API_TOKEN` environment variable to your Upsun API token (generate one in [Upsun Console](https://console.upsun.com) → Account settings):
+The plugin includes the [Upsun MCP Server](https://docs.upsun.com/get-started/ai/using-the-mcp.html) for natural-language infrastructure management.
+
+It authenticates via OAuth2 by default. In Claude Code, you can sign in via the `/plugin` menu.
+
+To use an API token instead, set the `UPSUN_API_TOKEN` environment variable to an Upsun API token (generate one in [Upsun Console](https://console.upsun.com) → Account settings):
 
 ```bash
 export UPSUN_API_TOKEN=your_token_here
