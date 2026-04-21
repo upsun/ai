@@ -1,7 +1,7 @@
 ---
 name: upsun
 description: Use when the user wants to do anything on Upsun — first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, environment lifecycle
-allowed-tools: Bash(upsun *:list*) Bash(upsun *:info*) Bash(upsun *:get*) Bash(upsun logs*) Bash(upsun url*) Bash(upsun relationships*) Bash(upsun metrics*) Bash(upsun help*) Bash(upsun list*) Bash(upsun --version)
+allowed-tools: Bash(upsun *:list*), Bash(upsun *:info*), Bash(upsun *:get*), Bash(upsun logs*), Bash(upsun url*), Bash(upsun relationships*), Bash(upsun metrics*), Bash(upsun help*), Bash(upsun list*), Bash(upsun --version)
 ---
 
 You are a developer's assistant for Upsun. Help them ship, debug, and iterate fast — safely.
@@ -39,23 +39,25 @@ Walk the developer through these steps in order. Do one at a time; confirm each 
 
 ```bash
 # macOS
-brew install platformsh/tap/upsun-cli
+brew install upsun/tap/upsun-cli
 
 # Linux / WSL
-curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
+curl -fsSL https://raw.githubusercontent.com/upsun/cli/main/installer.sh | bash
 
 # Windows (Scoop)
-scoop bucket add platformsh https://github.com/platformsh/homebrew-tap.git
+scoop bucket add upsun https://github.com/upsun/homebrew-tap.git
 scoop install upsun
 ```
+
+Native Alpine/Debian/RPM packages are also available from `repositories.upsun.com`.
 
 To upgrade an existing installation:
 ```bash
 # macOS
-brew upgrade upsun-cli
+brew upgrade upsun/tap/upsun-cli
 
 # Linux / WSL
-upsun self:update
+curl -fsSL https://raw.githubusercontent.com/upsun/cli/main/installer.sh | bash
 
 # Windows (Scoop)
 scoop update upsun
@@ -127,7 +129,7 @@ Note: once a source integration is active, the external repo becomes the source 
 
 Never assume a project or environment. Resolve in this order:
 
-1. **MCP available** -> call `list-project`, then `list-environment` and present options
+1. **MCP available** -> call `mcp__upsun__list-project`, then `mcp__upsun__list-environment` and present options
 2. **Upsun CLI available** -> run `upsun project:list` / `upsun environment:list` and present options
 3. **Neither available** -> ask for PROJECT_ID and environment name
 
@@ -141,7 +143,7 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 
 - Never assume `main` is production — confirm with `upsun environment:info`
 - If a source integration is active, `upsun push` still works but pushes to the source repo, so advanced git-push options (`--activate`, `--deploy-strategy`) are not available.
-- **Deployment strategy matters for migrations.** With `rolling` (default), old and new app versions run simultaneously sharing the same database, so schema changes must be backwards-compatible. With `stopstart`, the old version stops before the new starts — avoids that constraint but causes brief downtime. Use `upsun push --deploy-strategy=stopstart` or, for manual deploy types, `upsun deploy --strategy=stopstart`.
+- **Deployment strategy matters for migrations.** Default is `stopstart`: the old version stops before the new starts, causing brief downtime but no constraint on schema compatibility. With `rolling` (opt-in), old and new app versions run simultaneously sharing the same database, so schema changes must be backwards-compatible but there is no downtime. Use `upsun push --deploy-strategy=rolling` or, for manual deploy types, `upsun deploy --strategy=rolling`.
 - After deploy, offer to tail logs: `upsun logs --tail`
 
 ### Branch / Merge (feature environments)
@@ -164,12 +166,12 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 
 - List relationships from `upsun relationships` (or MCP) before asking which service
 - Goal options: interactive shell / export dump (recommend `.sql.gz`) / local tunnel for GUI tools / run migration
-- Migration: suggest testing on a staging branch first; consider `stopstart` deploy strategy for non-backwards-compatible schema changes
+- Migration: suggest testing on a staging branch first; the default `stopstart` strategy is safe for non-backwards-compatible schema changes (don't opt in to `rolling` unless the schema change is backwards-compatible)
 - Tunnel: show the full connection string after opening so the developer can paste it into their tool
 
 ### Environment Variables
 
-- Two levels: **project** (all environments) and **environment** (one environment, inherits down the tree). Setting environment-level variables will cause an automatic deployment by default; set `env:deploy:type manual` to make deployments explicit, so multiple variables can be set without triggering a deploy for each one.
+- Two levels: **project** (all environments) and **environment** (one environment, inherits down the tree). Setting environment-level variables will cause an automatic deployment by default; run `upsun env:deploy:type manual` to make deployments explicit, so multiple variables can be set without triggering a deploy for each one.
 - Variables need the `env:` prefix to appear as OS environment variables. Without it, they only appear in `$PLATFORM_VARIABLES` (base64-encoded JSON).
 - Use `--sensitive true` for secrets, to hide the variable value from logs and the console.
 - Environment variables are runtime-only by default. To make available at build time, use `--visible-build true`.
@@ -185,8 +187,9 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 ### Scale / Resources
 
 - Run `upsun resources:get` to show current allocations for all apps, workers, and services
-- CPU and RAM are paired via container profiles (HIGH_CPU, BALANCED, HIGH_MEMORY, HIGHER_MEMORY). Use `upsun resources:set` to adjust.
-- Horizontal scaling: set instance count separately. Each instance gets the full selected resources (not divided).
+- `upsun resources:set --size <name>:<cpu>` sets the CPU value for an app or service (e.g. `--size myapp:0.25,db:1`); RAM is derived from the container profile. Run `upsun resources:sizes` to list available sizes.
+- Profiles (`HIGH_CPU`, `BALANCED`, `HIGH_MEMORY`, `HIGHER_MEMORY`) determine the RAM-per-CPU ratio and are set via `container_profile:` in `.upsun/config.yaml`, not via CLI.
+- Horizontal scaling: `upsun resources:set --count <name>:<n>`. Each instance gets the full selected resources (not divided).
 
 ### Domain
 

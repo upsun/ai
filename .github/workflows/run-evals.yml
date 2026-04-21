@@ -39,10 +39,9 @@ jobs:
     
     - name: Install Upsun CLI
       run: |
-        curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | VENDOR=upsun bash
-        echo "$HOME/.platformsh/bin" >> $GITHUB_PATH
+        curl -fsSL https://raw.githubusercontent.com/upsun/cli/main/installer.sh | bash
     
-    - name: Install using-upsun skill
+    - name: Install upsun skill
       run: |
         mkdir -p "$HOME/.claude/skills/"
         cp -r plugins/upsun/skills/. "$HOME/.claude/skills/"
