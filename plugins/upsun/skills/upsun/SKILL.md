@@ -80,6 +80,8 @@ Via CLI or the console (https://console.upsun.com/projects/create-project):
 upsun project:create
 ```
 
+When running `project:create` non-interactively — from within an agent session such as Claude Code (whether invoked by the agent or with the `!` prefix), or with `UPSUN_CLI_NO_INTERACTION=1` or `--yes` — `--region` is required, and `--org` too if the account has access to more than one. `--title` and `--default-branch` are worth specifying regardless, for easier management later.
+
 ### 3. Add Upsun config
 
 Run `upsun init` in the project root — it generates `.upsun/config.yaml` (runtime, services, routes) and an `.environment` script if services are detected.
