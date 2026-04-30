@@ -106,9 +106,10 @@ upsun project:set-remote <PROJECT_ID>
 | Tooling | Command / Action |
 |---------|-----------------|
 | CLI | `upsun project:create` |
-| MCP | `mcp__upsun__create-project` (if available) |
+| MCP | Read-only in this repo's default MCP configuration; do not use for project creation unless write access is explicitly enabled |
 | Console | https://console.upsun.com/projects/create-project |
 
+Note: the checked-in MCP server configuration sets `enable-write: "false"` in `plugins/upsun/.mcp.json`, so MCP write operations such as project creation are disabled by default. Use the CLI or Console for this step, or enable MCP writes in that config before attempting write actions via MCP.
 ### 3. Add Upsun config
 
 **CLI**: Run `upsun init` in the project root — it generates `.upsun/config.yaml` (runtime, services, routes) and an `.environment` script if services are detected.
