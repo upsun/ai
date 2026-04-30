@@ -273,7 +273,7 @@ Show the exact command (CLI or MCP tool call) and wait for explicit confirmation
 | Operation | CLI | MCP equivalent |
 |-----------|-----|----------------|
 | Push / deploy / redeploy | `upsun push`, `upsun deploy`, `upsun redeploy` | `mcp__upsun__deploy` |
-| Backup restore / delete | `upsun backup:restore`, `upsun backup:delete` | `mcp__upsun__restore-backup` |
+| Backup restore | `upsun backup:restore` | `mcp__upsun__restore-backup` |
 | Environment merge / deactivate / delete / pause | `upsun environment:merge`, `:deactivate`, `:delete`, `:pause` | `mcp__upsun__merge-environment`, etc. |
 | Resources | `upsun resources:set`, `upsun autoscaling:set` | `mcp__upsun__set-resources` |
 | Variables | `upsun variable:create`, `:update`, `:delete` | `mcp__upsun__set-variable`, `:delete-variable` |
