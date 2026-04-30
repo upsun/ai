@@ -170,8 +170,8 @@ These operations require the Upsun CLI and cannot be performed via MCP alone. Wh
 | `upsun push` / `upsun deploy` | Push to source repo with active source integration |
 | `upsun tunnel:open` | Use a remote dev environment branch instead |
 | `upsun ssh` | Use Upsun console Web SSH: https://console.upsun.com |
-| `upsun mount:download` / `mount:upload` | Use `rsync` over SSH once CLI is available, or console file manager |
-| `upsun db:sql` / `db:dump` | Console web terminal or SSH (see above) |
+| `upsun mount:download` / `upsun mount:upload` | Use `rsync` over SSH once CLI is available, or console file manager |
+| `upsun db:sql` / `upsun db:dump` | Console web terminal or SSH (see above) |
 
 ---
 
