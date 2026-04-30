@@ -188,7 +188,7 @@ If inside a linked Git repo and CLI is available, run `upsun project:info` to au
 
 ## Step 2 — Developer workflows
 
-For every workflow below, use the active mode determined in [Detect tooling availability first](#detect-tooling-availability-first). **Prefer CLI whenever it is available**; fall back to MCP only when CLI is not installed.
+For every workflow below, use the active mode determined in [Detect tooling availability first](#detect-tooling-availability-first). **Prefer CLI whenever it is available**; fall back to MCP when the CLI is not installed or when the CLI lacks the required capability for the task.
 
 ### Deploy / Redeploy
 
