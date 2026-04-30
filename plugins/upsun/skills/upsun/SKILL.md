@@ -146,7 +146,7 @@ If CLI is unavailable, the alternative is to deploy a development environment (`
 
 ### 6. Connect Git provider (optional but recommended for MCP-only users)
 
-Connecting a source integration makes `git push` to GitHub/GitLab/Bitbucket trigger a Upsun deploy automatically, **enabling full deploy workflows without the Upsun CLI**:
+Connecting a source integration makes `git push` to GitHub/GitLab/Bitbucket trigger an Upsun deploy automatically, **enabling full deploy workflows without the Upsun CLI**:
 
 | Tooling | Command / Action |
 |---------|-----------------|
