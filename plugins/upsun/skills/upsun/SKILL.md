@@ -26,8 +26,8 @@ Upsun is a git-driven cloud application platform. Key concepts:
 
 **Before doing anything**, silently determine which tools are reachable:
 
-1. Try `upsun --version` — if it succeeds, **CLI is available**.
-2. Try `mcp__upsun__list-project` — if it succeeds, **MCP is available**.
+1. Check if the `upsun` MCP server is available — if so, **MCP is available**.
+2. Try `upsun --version` — if it succeeds, **CLI is available**.
 3. If neither works, assume **console-only** (guide via https://console.upsun.com).
 
 Store the result as the active mode for the rest of the conversation:
