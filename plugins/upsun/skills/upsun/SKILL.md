@@ -37,7 +37,9 @@ Before doing anything, determine which situation applies:
 
 Walk the developer through these steps in order. Do one at a time; confirm each before moving on.
 
-### 1. Install CLI
+### 1. Install CLI (optional)
+
+Only suggest this step if the CLI is not already available and the developer wants to use it.
 
 ```bash
 # macOS
