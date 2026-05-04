@@ -19,7 +19,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 
 2. **Upsun CLI** v5.6.0 or higher *(optional but recommended)*
 
-   The skill works without the CLI — operations fall back to the MCP server automatically. Install the CLI for full functionality (deploys, SSH, tunnels, local development):
+   The skill can be used without the CLI, but automatic fallback to the MCP server only works when the MCP configuration in `plugins/upsun/.mcp.json` is installed. For `skills.sh` or other skill-only installs, install the CLI for operational commands unless you separately configure MCP. Install the CLI for full functionality (deploys, SSH, tunnels, local development):
 
    ```bash
    # Install Upsun CLI
