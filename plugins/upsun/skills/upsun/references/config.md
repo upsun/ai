@@ -146,6 +146,6 @@ Services have `"service": true`; runtimes have `"service": false`.
 ## Framework and language templates
 
 For per-language and per-framework starter configs (Node.js, PHP, Python, Go, Ruby,
-Next.js, Django, WordPress, etc.) see the templates in `references/config/`.
+Next.js, Django, WordPress, etc.) see the templates in `config/`.
 The index at [references/config/generated-index.md](config/generated-index.md) lists
 every available file. Load the relevant file when the user's stack is known.
