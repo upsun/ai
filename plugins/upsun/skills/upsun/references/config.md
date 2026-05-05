@@ -140,3 +140,12 @@ Services have `"service": true`; runtimes have `"service": false`.
 - For PHP apps, set `build.flavor: none` and use `composer install --no-dev --no-interaction --optimize-autoloader` in the build hook.
 - Relationship names become the env var prefix (uppercased). The vars are runtime-only.
 - Run `upsun init` to auto-detect your stack and generate a starter config.
+
+---
+
+## Framework and language templates
+
+For per-language and per-framework starter configs (Node.js, PHP, Python, Go, Ruby,
+Next.js, Django, WordPress, etc.) see the templates in `references/config/`.
+The index at [references/config/generated-index.md](config/generated-index.md) lists
+every available file. Load the relevant file when the user's stack is known.
