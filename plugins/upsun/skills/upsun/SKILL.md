@@ -88,7 +88,7 @@ upsun project:create
 
 Run `upsun init` in the project root — it generates `.upsun/config.yaml` (runtime, services, routes) and an `.environment` script if services are detected.
 
-See [references/config.md](references/config.md) for a minimal working template and common service examples. If the user's language or framework is known, also load the matching file from [references/config/](references/config/generated-index.md).
+See [references/config.md](references/config.md) for a minimal working template and common service examples. If the user's language or framework is known, also load the matching file from the [references/config index](references/config/generated-index.md).
 
 Key points for the config:
 - For Node.js and PHP apps, set `build.flavor: none` and manage dependencies explicitly in the build hook.
