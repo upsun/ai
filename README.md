@@ -41,6 +41,15 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 
 > **Note:** A restart of Claude Code may be needed if the plugin install command fails.
 
+### Enable Auto-Update (Recommended)
+
+In Claude Code, third-party marketplace plugins don't auto-update by default. Enable auto-update to receive plugin improvements automatically at startup:
+
+1. Run `/plugin` in Claude Code
+2. Go to the **Marketplaces** tab
+3. Select **upsun**
+4. Select **Enable auto-update**
+
 ### Other IDEs and AI Agents (via skills.sh)
 
 Install the Upsun skill for Cursor, VS Code, Windsurf, and any other AI agent or IDE that supports [skills.sh](https://skills.sh):
