@@ -1,6 +1,6 @@
 ---
 name: upsun
-description: Use when the user wants to do anything on Upsun — first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, environment lifecycle
+description: Manages Upsun projects — deployments, environments, backups, databases, resources, variables, domains, and integrations. Use when the user wants to do anything on Upsun, including first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, or environment lifecycle.
 allowed-tools: Bash(upsun *:list*), Bash(upsun *:info*), Bash(upsun *:get*), Bash(upsun logs*), Bash(upsun url*), Bash(upsun relationships*), Bash(upsun metrics*), Bash(upsun help*), Bash(upsun list*), Bash(upsun --version)
 ---
 
@@ -104,7 +104,7 @@ upsun push
 
 Default resources are allocated automatically on first deploy. To control initial sizing, pass `--resources-init=minimum` (cheapest) or `--resources-init=parent` (match parent environment) on `upsun push` or `upsun branch`.
 
-After deploy: `upsun url` to open the environment, `upsun logs --tail` to check for issues.
+If `upsun push` exits non-zero the deploy did not complete — stop and inspect the output rather than moving on. After a successful push, `upsun url` opens the environment and `upsun logs --tail app` reads the app log to find any runtime issues.
 
 Review and calibrate resources after running with `upsun metrics` and `upsun resources:set`.
 
@@ -148,7 +148,12 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 - Never assume `main` is production — confirm with `upsun environment:info`
 - If a source integration is active, `upsun push` still works but pushes to the source repo, so advanced git-push options (`--activate`, `--deploy-strategy`) are not available.
 - **Deployment strategy matters for migrations.** Default is `stopstart`: the old version stops before the new starts, causing brief downtime but no constraint on schema compatibility. With `rolling` (opt-in), old and new app versions run simultaneously sharing the same database, so schema changes must be backwards-compatible but there is no downtime. Use `upsun push --deploy-strategy=rolling` or, for manual deploy types, `upsun deploy --strategy=rolling`.
-- After deploy, offer to tail logs: `upsun logs --tail`
+
+#### Production deploys: backups before risky changes
+
+For large or risky production changes that would be hard to roll back, check `upsun backup:list -e <prod>` and confirm a recent backup covers the pre-deploy state. If not, create one with `upsun backup:create --live -e <prod>` — see [Backup / Restore](#backup--restore) for the retention caveat.
+
+After deploying, `upsun logs app --tail -e <prod>` is the fastest signal that something has regressed.
 
 ### Branch / Merge (feature environments)
 
@@ -184,8 +189,9 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 
 ### Backup / Restore
 
-- **Standard backup** causes a momentary pause (~15-30s) but guarantees data consistency across all containers.
-- **Live backup** (`--live`): zero downtime, but services continue accepting writes during the snapshot, so data may be inconsistent across containers. Automated backups are always live.
+- **Prefer `--live` (no downtime).** It's fine for most cases and is what automated backups use.
+- The default (non-`--live`) backup freezes the environment for the duration of the snapshot to guarantee consistency. The freeze may cause downtime. Only choose this when backup consistency is absolutely required and a short outage is acceptable.
+- **Backup retention per environment is finite — creating a new backup may evict the oldest.** Run `upsun backup:list` first and skip creation if a recent backup is already adequate; don't take one reflexively.
 - Restore: list available backups -> confirm target environment -> "This will overwrite [env] with backup [ID]. Proceed?"
 
 ### Scale / Resources
@@ -220,7 +226,7 @@ Read-only operations (`list`, `info`, `get`, `logs --tail`) do not require confi
 
 ## Safety rules
 
-- Before `backup:restore` -> create a safety backup of the current state first
+- Before `backup:restore`, consider whether the current state is worth capturing — but remember retention is finite, so a "safety backup" can evict the older backup you actually want. Usually if you're restoring, the current state isn't worth preserving.
 - `environment:deactivate` -> removes services and data but keeps the branch
 - `environment:delete` -> warn: "This is permanent and cannot be undone"
 - `FLUSHALL` / `DROP TABLE` / `DELETE FROM` -> require explicit written confirmation every time
