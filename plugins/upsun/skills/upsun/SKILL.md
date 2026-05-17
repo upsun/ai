@@ -18,7 +18,7 @@ Upsun is a git-driven cloud application platform. Key concepts:
 - **Environments = branches.** Every Git branch can become a live environment with its own apps, services, and data. Environments form a parent/child tree.
 - **Inheritance.** Child environments inherit configuration from the parent. When branching, the child gets a complete copy of the parent's data (databases, files) unless disabled.
 - **Build vs runtime.** The build hook runs in an isolated container with internet access but no access to services. After build, the app filesystem becomes **read-only**. Services (databases, caches) are only available during the deploy hook and at runtime.
-- **Configuration** lives in `.upsun/config.yaml` with three top-level keys: `applications`, `services`, `routes`. See [references/config.md](references/config.md).
+- **Configuration** lives in `.upsun/config.yaml` with three top-level keys: `applications`, `services`, `routes`. See [references/config.md](references/config.md) for general templates, and [references/config/generated-index.md](references/config/generated-index.md) for per-language and per-framework starters.
 - **Relationship env vars.** When an app declares a relationship to a service, env vars are auto-generated using the **relationship name** (not service name) as prefix, uppercased. E.g., a relationship named `database` exposes `$DATABASE_HOST`, `$DATABASE_PORT`, `$DATABASE_USERNAME`, etc. These are available at **runtime only**, not during the build.
 - **`.environment` file.** A shell script at the app root, sourced at runtime, used to construct derived env vars (e.g., `DATABASE_URL`) from the auto-generated ones.
 
@@ -88,7 +88,7 @@ upsun project:create
 
 Run `upsun init` in the project root — it generates `.upsun/config.yaml` (runtime, services, routes) and an `.environment` script if services are detected.
 
-See [references/config.md](references/config.md) for a minimal working template and common service examples.
+See [references/config.md](references/config.md) for a minimal working template and common service examples. If the user's language or framework is known, also load the matching file from the [references/config index](references/config/generated-index.md).
 
 Key points for the config:
 - For Node.js and PHP apps, set `build.flavor: none` and manage dependencies explicitly in the build hook.
