@@ -1,0 +1,31 @@
+{
+  "$schema": "https://tryautomatic.app/schemas/automatic.json",
+  "name": "upsun-ai",
+  "version": "0.2.0",
+  "description": "Upsun plugin for AI coding agents — skills and MCP server for managing Upsun projects",
+  "author": { "name": "Upsun", "url": "https://upsun.com" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/upsun/ai.git" },
+  "keywords": ["upsun", "paas", "deployment", "devops", "infrastructure", "mcp"],
+
+  "pinning": { "strategy": "branch", "ref": "main" },
+
+  "skills": {
+    "skill_json": "./skill.json"
+  },
+
+  "mcp_servers": [
+    {
+      "name": "upsun",
+      "path": "./mcp-servers/upsun.json",
+      "description": "Natural-language Upsun infrastructure management via the Upsun MCP server"
+    }
+  ],
+
+  "agent_overrides": {
+    "_defaults": {
+      "skills": ["upsun"],
+      "mcp_servers": ["upsun"]
+    }
+  }
+}
