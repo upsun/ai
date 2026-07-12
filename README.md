@@ -9,7 +9,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 | Component | Location | Description |
 |-----------|----------|-------------|
 | **Skills** | `plugins/upsun/skills/` | `upsun` – workflow guide for deployments, environments, backups, databases, and more, with a config reference |
-| **MCP Server** | `plugins/upsun/.mcp.json` | Natural-language infrastructure management via [Upsun MCP](https://docs.upsun.com/get-started/ai/using-the-mcp.html) |
+| **MCP Server** | `plugins/upsun/.mcp.json` | Natural-language infrastructure management via [Upsun MCP](https://developer.upsun.com/docs/get-started/ai/using-the-mcp) |
 
 ## Installation
 
@@ -98,7 +98,7 @@ For global permissions, edit `~/.claude/settings.json` with the same structure. 
 
 ### MCP Server (Optional)
 
-The plugin includes the [Upsun MCP Server](https://docs.upsun.com/get-started/ai/using-the-mcp.html) for natural-language infrastructure management.
+The plugin includes the [Upsun MCP Server](https://developer.upsun.com/docs/get-started/ai/using-the-mcp) for natural-language infrastructure management.
 
 It authenticates via OAuth2 by default. In Claude Code, you can sign in via the `/plugin` menu.
 
@@ -200,8 +200,8 @@ This project is licensed under the MIT - see the [LICENSE](LICENSE) file for det
 
 ### Support
 
-- **Upsun Documentation**: https://docs.upsun.com
-- **Upsun CLI Reference**: https://docs.upsun.com/administration/cli/reference.html
+- **Upsun Documentation**: https://developer.upsun.com/docs
+- **Upsun CLI Reference**: https://developer.upsun.com/cli/reference
 - **Claude Code** (plugin docs): https://code.claude.com/docs
 - **Issues**: Please report issues on the GitHub repository
 
