@@ -1,0 +1,46 @@
+{
+  "$schema": "https://skill.json.org/schema/1.0.0/skill.schema.json",
+  "name": "upsun-ai",
+  "version": "0.2.0",
+  "description": "Upsun plugin for AI coding agents and IDEs — skills and MCP server for managing Upsun projects",
+  "author": {
+    "name": "Upsun"
+  },
+  "license": "MIT",
+  "homepage": "https://upsun.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upsun/ai.git"
+  },
+  "keywords": [
+    "upsun",
+    "platform-as-a-service",
+    "paas",
+    "deployment",
+    "devops",
+    "infrastructure",
+    "mcp",
+    "claude",
+    "cursor"
+  ],
+  "skills": [
+    {
+      "name": "upsun",
+      "path": "./plugins/upsun/skills/upsun",
+      "description": "Manages Upsun projects — deployments, environments, backups, databases, resources, variables, domains, and integrations. Use when the user wants to do anything on Upsun, including first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, or environment lifecycle.",
+      "category": "infrastructure",
+      "tags": [
+        "upsun",
+        "deployment",
+        "paas",
+        "git-driven",
+        "environments",
+        "databases",
+        "backups"
+      ],
+      "requires": {
+        "tools": ["upsun"]
+      }
+    }
+  ]
+}
