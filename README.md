@@ -43,6 +43,16 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 
 > **Note:** A restart of Claude Code may be needed if the plugin install command fails.
 
+### Add via Automatic
+
+[Automatic](https://tryautomatic.app) is a desktop hub that installs skills and MCP servers across multiple AI agents (Claude Code, Cursor, Codex, and more). One click installs both the `upsun` skill and the Upsun MCP server for any agents you have connected.
+
+<a href="https://tryautomatic.app/install?repo=upsun/ai">
+  <img src="https://tryautomatic.app/badges/install.svg" alt="Install in Automatic" height="32">
+</a>
+
+Or paste this URL into your browser: `https://tryautomatic.app/install?repo=upsun/ai`
+
 ### Other IDEs and AI Agents (via skills.sh)
 
 Install the Upsun skill for Cursor, VS Code, Windsurf, and any other AI agent or IDE that supports [skills.sh](https://skills.sh):
