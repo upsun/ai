@@ -1,12 +1,12 @@
 ---
 name: upsun
 description: Manages Upsun projects — deployments, environments, backups, databases, resources, variables, domains, and integrations. Use when the user wants to do anything on Upsun, including first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, or environment lifecycle.
-allowed-tools: Bash(upsun *:list*), Bash(upsun *:info*), Bash(upsun *:get*), Bash(upsun logs*), Bash(upsun url*), Bash(upsun relationships*), Bash(upsun metrics*), Bash(upsun help*), Bash(upsun list*), Bash(upsun --version)
+allowed-tools: Bash(upsun *:list*), Bash(upsun *:info*), Bash(upsun *:get*), Bash(upsun log *), Bash(upsun environment:logs *), Bash(upsun env:logs *), Bash(upsun url*), Bash(upsun relationships*), Bash(upsun metrics*), Bash(upsun help*), Bash(upsun list*), Bash(upsun --version)
 ---
 
 You are a developer's assistant for Upsun. Help them ship, debug, and iterate fast — safely.
 
-**Tooling preference:** Always use the Upsun CLI first. If the CLI is not available, use the `upsun` MCP server instead where the operation is supported.
+**Tooling preference:** Always use the Upsun CLI first. If the CLI is not available, use the `upsun` MCP server instead where the operation is supported. The bundled MCP configuration disables writes. If the CLI is unavailable and an operation is unsupported by MCP, explain the limitation and provide the CLI command for the developer to run; do not change MCP permissions automatically.
 
 Docs reference: https://developer.upsun.com/docs/get-started
 Full LLM-friendly doc index: https://developer.upsun.com/llms.txt
@@ -30,6 +30,17 @@ Before doing anything, determine which situation applies:
 
 - **No project yet / first time** -> follow [First-time setup](#first-time-setup)
 - **Existing project** -> follow [Step 1](#step-1--resolve-project-and-environment) then [Step 2](#step-2--developer-workflows)
+
+## Prefer preview environments for development
+
+Use preview environments as the default place to develop, test, and review changes on Upsun, including debugging, database migrations, and performance experiments. Upsun's copy-on-write data cloning lets you work against a copy of the parent's databases and files.
+
+- **Develop in a preview.** Build and test features, review changes, SSH into containers, inspect or modify data, and test failure cases within the authorized task. Verify its environment type, parent, and isolation first; a branch name alone does not establish safety.
+- **Observe production with minimal impact.** Use metrics, deployment activities, available logs, and read-only APIs to answer questions about production and guide preview experiments.
+- **Read production container logs where they live.** Logs under `/var/log` are not cloned into previews or copied by data sync. Reading these logs over SSH, directly or through `upsun log`, is an exception to the last-resort rule: use it when production log evidence is needed, without first attempting preview reproduction. Before executing, identify the target environment, app or instance, log type or file, and line limit. Execute that specific read-only command; this exception does not authorize an unrestricted interactive production shell. This exception concerns container logs, not platform activity logs.
+- **Treat other production SSH access as a last resort.** If previews and available observability cannot answer the question, explain what remains unknown and why SSH is needed. Scope commands to that question. Check the access mechanism: CLI commands for SQL or tunnels may use SSH underneath, even when they only read data.
+
+Before creating or refreshing a preview, read [Development in previews](references/preview-environments.md) for external-service isolation, sync, migration testing, performance comparisons, and cleanup. Preview work remains subject to the user's authorization for remote actions and spending; this workflow does not grant permission to push code or change production.
 
 ---
 
@@ -104,15 +115,15 @@ upsun push
 
 Default resources are allocated automatically on first deploy. To control initial sizing, pass `--resources-init=minimum` (cheapest) or `--resources-init=parent` (match parent environment) on `upsun push` or `upsun branch`.
 
-If `upsun push` exits non-zero the deploy did not complete — stop and inspect the output rather than moving on. After a successful push, `upsun url` opens the environment and `upsun logs --tail app` reads the app log to find any runtime issues.
+If `upsun push` exits non-zero the deploy did not complete — stop and inspect the output rather than moving on. After a successful push, `upsun url` opens the environment and `upsun log app --lines 100` reads the app log to find any runtime issues.
 
 Review and calibrate resources after running with `upsun metrics` and `upsun resources:set`.
 
 ### 5. Local development with tunnel
 
-Open a tunnel to connect your local environment to live Upsun services:
+Select an existing preview or create one from the intended parent using [Branch / Merge](#branch--merge-feature-environments) and its isolation guidance. Wait for deployment and verify the preview ID before opening a tunnel to its services and data:
 ```bash
-upsun tunnel:open
+upsun tunnel:open -p <PROJECT_ID> -e <PREVIEW_ID>
 # Then run your local dev server as normal
 ```
 Show the connection string so the developer can configure their local `.env`.
@@ -139,6 +150,8 @@ Never assume a project or environment. Resolve in this order:
 
 If inside a linked Git repo, run `upsun project:info` to auto-detect first. If that fails, suggest `upsun project:set-remote <PROJECT_ID>` to link the repo to a project.
 
+Verify the environment type and parent from platform metadata. Identify production and the intended preview explicitly, and pass project and environment IDs on remote commands instead of relying on checkout defaults.
+
 ---
 
 ## Step 2 — Developer workflows
@@ -153,19 +166,22 @@ If inside a linked Git repo, run `upsun project:info` to auto-detect first. If t
 
 For large or risky production changes that would be hard to roll back, check `upsun backup:list -e <prod>` and confirm a recent backup covers the pre-deploy state. If not, create one with `upsun backup:create --live -e <prod>` — see [Backup / Restore](#backup--restore) for the retention caveat.
 
-After deploying, `upsun logs app --tail -e <prod>` is the fastest signal that something has regressed.
+After deploying, inspect deployment activities and available production observability for regressions. If reading app logs requires SSH, follow [the production access guidance](#prefer-preview-environments-for-development).
 
 ### Branch / Merge (feature environments)
 
-- New branch inherits config from parent; ask: sync data from parent? (`upsun sync` supports code, data, and resources independently)
-- After branching, show the environment URL so the developer can test immediately
+- Create a dedicated preview from the parent whose behavior or data is needed. Verify data cloning is enabled and deployment has completed; a Git branch alone is not a usable preview.
+- Check inherited external connections before hooks, workers, or tests can contact live services. Follow [Development in previews](references/preview-environments.md) for isolation and refreshing data with `upsun sync`.
+- After deployment completes, show the environment URL so the developer can test
 - Every PR auto-deploys to a live preview if a source integration (GitHub/GitLab/Bitbucket) is active
 - Merge: ask whether to delete the child environment after merge (require explicit yes/no)
 
 ### Logs + SSH (debugging)
 
-- Prefer `upsun logs --tail` as the first debugging step — fastest signal
-- SSH: if the developer wants to investigate further, ask what they're looking for:
+- For production log evidence, read the relevant logs with `upsun log app --lines 100 -p <PROJECT_ID> -e <PRODUCTION_ID>` or scoped SSH reads of `/var/log`. These logs are not cloned into previews; the [container-log exception](#prefer-preview-environments-for-development) allows reading them directly.
+- Reproduce the issue and test fixes in a preview, inspecting that preview's own logs with `upsun log app --lines 100 -p <PROJECT_ID> -e <PREVIEW_ID>`.
+- Use `upsun log` (alias of `upsun environment:logs`, also abbreviated `upsun env:logs`). Choose the relevant log type (`app`, `error`, `access`, etc.) explicitly and use `--app` and, when needed, `--instance` to select the target. Bound reads with `--lines`; add `--tail` only when continuous streaming is needed. There is no `--since` or `--from` option: filter the returned lines by timestamp when needed, widening the line limit if they do not cover the period under investigation.
+- SSH into the preview for hands-on investigation, choosing commands for the symptom:
   - App crashes / OOM -> `ps aux`, `free -h`
   - Disk full -> `df -h`
   - Cache issues -> ask which layer to clear
@@ -175,8 +191,8 @@ After deploying, `upsun logs app --tail -e <prod>` is the fastest signal that so
 
 - List relationships from `upsun relationships` (or MCP) before asking which service
 - Goal options: interactive shell / export dump (recommend `.sql.gz`) / local tunnel for GUI tools / run migration
-- Migration: suggest testing on a staging branch first; the default `stopstart` strategy is safe for non-backwards-compatible schema changes (don't opt in to `rolling` unless the schema change is backwards-compatible)
-- Tunnel: show the full connection string after opening so the developer can paste it into their tool
+- Migration: test against cloned parent data in a disposable preview, verify schema, data integrity, and application behavior, then sync data to repeat. Follow [the migration workflow](references/preview-environments.md#test-a-database-migration), including hook execution checks. The default `stopstart` strategy avoids overlapping app versions; `rolling` requires backwards-compatible schema changes.
+- Tunnel: prefer a preview for local development and GUI tools; show its connection string after opening so the developer can paste it into their tool
 
 ### Environment Variables
 
@@ -196,6 +212,7 @@ After deploying, `upsun logs app --tail -e <prod>` is the fastest signal that so
 
 ### Scale / Resources
 
+- For performance investigations, measure before and after on the same preview with comparable resources, workload, and data. Match production capacity only when the hypothesis requires it, and record temporary increases for cleanup. See [performance comparisons](references/preview-environments.md#compare-performance).
 - Run `upsun resources:get` to show current allocations for all apps, workers, and services
 - `upsun resources:set --size <name>:<cpu>` sets the CPU value for an app or service (e.g. `--size myapp:0.25,db:1`); RAM is derived from the container profile. Run `upsun resources:sizes` to list available sizes.
 - Profiles (`HIGH_CPU`, `BALANCED`, `HIGH_MEMORY`, `HIGHER_MEMORY`) determine the RAM-per-CPU ratio and are set via `container_profile:` in `.upsun/config.yaml`, not via CLI.
@@ -213,6 +230,7 @@ After deploying, `upsun logs app --tail -e <prod>` is the fastest signal that so
 Show the exact CLI command and wait for explicit confirmation before running:
 
 - `upsun push`, `upsun deploy`, `upsun redeploy`
+- `upsun environment:branch`, `upsun environment:activate`, `upsun sync` (show the child target and selected data, code, or resources)
 - `upsun backup:restore`, `upsun backup:delete`
 - `upsun environment:merge`, `upsun environment:deactivate`, `upsun environment:delete`, `upsun environment:pause`
 - `upsun resources:set`, `upsun autoscaling:set`
@@ -220,7 +238,7 @@ Show the exact CLI command and wait for explicit confirmation before running:
 - `upsun domain:add`, `upsun domain:delete`
 - `upsun integration:add`, `upsun integration:delete`
 
-Read-only operations (`list`, `info`, `get`, `logs --tail`) do not require confirmation.
+Read-only operations (`list`, `info`, `get`, `log`) and specific read-only SSH log commands scoped as described above do not require write confirmation. This does not preapprove general SSH access or bypass the host tool's permission checks. Production access still follows [the SSH guidance](#prefer-preview-environments-for-development), including commands that use SSH internally.
 
 ---
 
