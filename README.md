@@ -17,7 +17,7 @@ Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) pr
 
 1. **AI coding agent or IDE** – e.g. [Claude Code](https://claude.ai/code), Cursor, or other MCP-compatible tools
 
-2. **Upsun CLI** v5.6.0 or higher *(optional but recommended)*
+2. **Upsun CLI** v5.14.0 or higher *(optional but recommended)*
 
    The skill can be used without the CLI, but automatic fallback to the MCP server only works when the MCP configuration in `plugins/upsun/.mcp.json` is installed. For `skills.sh` or other skill-only installs, install the CLI for operational commands unless you separately configure MCP. Install the CLI for full functionality (deploys, SSH, tunnels, local development):
 
@@ -84,6 +84,8 @@ Add Upsun CLI permissions to your agent's settings. For Claude Code, create or e
       "Bash(upsun activity:*)",
       "Bash(upsun backup:*)",
       "Bash(upsun project:*)",
+      "Bash(upsun lint*)",
+      "Bash(upsun validate*)",
       "Bash(upsun log *)",
       "Bash(upsun environment:logs *)",
       "Bash(upsun env:logs *)",
@@ -194,7 +196,7 @@ This structure means the plugin is self-contained and reusable — any agent tha
 
 - AI coding agent or IDE (Claude Code, Cursor, etc.)
 - Authenticated Upsun account
-- Upsun CLI v5.6.0 or higher *(optional — the skill falls back to the MCP server when CLI is not available)*
+- Upsun CLI v5.14.0 or higher *(optional — the skill falls back to the MCP server when CLI is not available)*
 
 ### License
 
@@ -210,5 +212,5 @@ This project is licensed under the MIT - see the [LICENSE](LICENSE) file for det
 ### Acknowledgments
 
 - Upsun plugin for AI coding agents and the [Upsun](https://upsun.com) Platform-as-a-Service
-- Upsun CLI v5.6.0+ command structure used where available
+- Upsun CLI v5.14.0+ command structure used where available
 
