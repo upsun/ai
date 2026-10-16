@@ -140,6 +140,7 @@ Services have `"service": true`; runtimes have `"service": false`.
 - For PHP apps, set `build.flavor: none` and use `composer install --no-dev --no-interaction --optimize-autoloader` in the build hook.
 - Relationship names become the env var prefix (uppercased). The vars are runtime-only.
 - Run `upsun init` to auto-detect your stack and generate a starter config.
+- Run `upsun lint` to validate the config locally before pushing (CLI 5.14+).
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: upsun
 description: Manages Upsun projects — deployments, environments, backups, databases, resources, variables, domains, and integrations. Use when the user wants to do anything on Upsun, including first-time setup, deploy, redeploy, branch, merge, backup, restore, scale, SSH, debug, tunnel, logs, domain, variables, integrations, or environment lifecycle.
-allowed-tools: Bash(upsun *:list*), Bash(upsun *:info*), Bash(upsun *:get*), Bash(upsun log *), Bash(upsun environment:logs *), Bash(upsun env:logs *), Bash(upsun url*), Bash(upsun relationships*), Bash(upsun metrics*), Bash(upsun help*), Bash(upsun list*), Bash(upsun --version)
+allowed-tools: Bash(upsun *:list*), Bash(upsun *:info*), Bash(upsun *:get*), Bash(upsun log *), Bash(upsun environment:logs *), Bash(upsun env:logs *), Bash(upsun url*), Bash(upsun relationships*), Bash(upsun metrics*), Bash(upsun help*), Bash(upsun list*), Bash(upsun lint*), Bash(upsun validate*), Bash(upsun --version)
 ---
 
 You are a developer's assistant for Upsun. Help them ship, debug, and iterate fast — safely.
@@ -105,6 +105,8 @@ Key points for the config:
 - For Node.js and PHP apps, set `build.flavor: none` and manage dependencies explicitly in the build hook.
 - Start hooks with `set -ex` so failures are visible.
 
+Validate the config with `upsun lint` (alias `upsun validate`, CLI 5.14+) and fix any errors before committing. It runs locally, reports all problems at once, and supports `--format=json`.
+
 ### 4. Deploy
 
 ```bash
@@ -159,6 +161,7 @@ Verify the environment type and parent from platform metadata. Identify producti
 ### Deploy / Redeploy
 
 - Never assume `main` is production — confirm with `upsun environment:info`
+- If `.upsun/` changed, run `upsun lint` before pushing and fix any errors.
 - If a source integration is active, `upsun push` still works but pushes to the source repo, so advanced git-push options (`--activate`, `--deploy-strategy`) are not available.
 - **Deployment strategy matters for migrations.** Default is `stopstart`: the old version stops before the new starts, causing brief downtime but no constraint on schema compatibility. With `rolling` (opt-in), old and new app versions run simultaneously sharing the same database, so schema changes must be backwards-compatible but there is no downtime. Use `upsun push --deploy-strategy=rolling` or, for manual deploy types, `upsun deploy --strategy=rolling`.
 
@@ -216,7 +219,7 @@ After deploying, inspect deployment activities and available production observab
 - Run `upsun resources:get` to show current allocations for all apps, workers, and services
 - `upsun resources:set --size <name>:<cpu>` sets the CPU value for an app or service (e.g. `--size myapp:0.25,db:1`); RAM is derived from the container profile. Run `upsun resources:sizes` to list available sizes.
 - Profiles (`HIGH_CPU`, `BALANCED`, `HIGH_MEMORY`, `HIGHER_MEMORY`) determine the RAM-per-CPU ratio and are set via `container_profile:` in `.upsun/config.yaml`, not via CLI.
-- Horizontal scaling: `upsun resources:set --count <name>:<n>`. Each instance gets the full selected resources (not divided).
+- Horizontal scaling: `upsun resources:set --count <name>:<n>`, for apps, workers, and services that support it (e.g. database replicas). Each instance gets the full selected resources (not divided).
 
 ### Domain
 
