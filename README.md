@@ -1,7 +1,5 @@
 # Upsun plugin for AI coding agents
 
-> **⚠️ Warning:** This project is in early and active development. Things may change without notice.
-
 Upsun plugin for AI coding agents and IDEs. Manage [Upsun](https://upsun.com) projects with skills and an MCP server. The plugin lives in `plugins/upsun/` and can be shared across multiple agents. Plugins are available for Claude Code and Cursor, with skill-based integration for other IDEs and agents via [skills.sh](https://skills.sh).
 
 ## What's included
