@@ -196,7 +196,7 @@ After deploying, inspect deployment activities and available production observab
 - Goal options: interactive shell / export dump (recommend `.sql.gz`) / local tunnel for GUI tools / run migration
 - Migration: test against cloned parent data in a disposable preview, verify schema, data integrity, and application behavior, then sync data to repeat. Follow [the migration workflow](references/preview-environments.md#test-a-database-migration), including hook execution checks. The default `stopstart` strategy avoids overlapping app versions; `rolling` requires backwards-compatible schema changes.
 - Tunnel: prefer a preview for local development and GUI tools; show its connection string after opening so the developer can paste it into their tool
-- Disk filling up, or reclaiming space (MySQL, MariaDB, PostgreSQL): follow [Database disk space](references/database-disk-space.md). Diagnose with read-only queries first; table rebuilds (`ALTER TABLE ... FORCE`, `OPTIMIZE TABLE`, `VACUUM FULL`, `REINDEX`) copy the table and may lock it
+- Disk filling up, or reclaiming space (MySQL, MariaDB, PostgreSQL): follow [Database disk space](references/database-disk-space.md). Diagnose with read-only queries first; table rewrites (`ALTER TABLE ... FORCE`, `OPTIMIZE TABLE`, `VACUUM FULL`) copy the table and its indexes and may lock it, and `REINDEX` copies the index
 
 ### Environment Variables
 
@@ -241,7 +241,7 @@ Show the exact CLI command and wait for explicit confirmation before running:
 - `upsun variable:create`, `upsun variable:update`, `upsun variable:delete`
 - `upsun domain:add`, `upsun domain:delete`
 - `upsun integration:add`, `upsun integration:delete`
-- `upsun db:mysql-optimize --execute`, and SQL that rewrites or locks tables (`ALTER TABLE`, `OPTIMIZE TABLE`, `VACUUM FULL`, `REINDEX`)
+- `upsun db:mysql-optimize --execute`, and SQL that rewrites, locks, or empties tables (`ALTER TABLE`, `OPTIMIZE TABLE`, `VACUUM FULL`, `REINDEX`, `TRUNCATE`)
 
 Read-only operations (`list`, `info`, `get`, `log`) and specific read-only SSH log commands scoped as described above do not require write confirmation. This does not preapprove general SSH access or bypass the host tool's permission checks. Production access still follows [the SSH guidance](#prefer-preview-environments-for-development), including commands that use SSH internally.
 

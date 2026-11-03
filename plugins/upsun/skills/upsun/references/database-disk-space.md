@@ -71,15 +71,16 @@ SELECT s.schemaname, s.relname,
 `pg_total_relation_size` includes indexes and TOAST data. Many dead tuples and an old or empty `last_autovacuum` mean autovacuum is not keeping up, or is blocked. Check for what holds back cleanup:
 
 ```sql
-SELECT pid, state, now() - xact_start AS xact_age, left(query, 60) AS query
+SELECT pid, usename, state, now() - xact_start AS xact_age, left(query, 60) AS query
   FROM pg_stat_activity
- WHERE xact_start IS NOT NULL
- ORDER BY xact_start
+ WHERE backend_type = 'client backend'
+ ORDER BY xact_start NULLS LAST
  LIMIT 10;
-SELECT slot_name, active, xmin, catalog_xmin FROM pg_replication_slots;
+SELECT slot_name, active, age(xmin) AS xmin_age, age(catalog_xmin) AS catalog_xmin_age
+  FROM pg_replication_slots;
 ```
 
-Long-running or `idle in transaction` sessions, and inactive replication slots, prevent vacuum from removing dead tuples. Fixing these comes before any rewrite.
+Long-running or `idle in transaction` sessions prevent vacuum from removing dead tuples. Without superuser or `pg_read_all_stats` privileges, other roles' sessions show `<insufficient privilege>` and no `xact_start`: if such rows appear, repeat the query with an endpoint with `admin` privileges before concluding that nothing blocks vacuum. A replication slot with an old `xmin` (a large `xmin_age`) also holds back cleanup of all tables; an old `catalog_xmin` holds back only system catalogs. A slot with neither does not block vacuum. Fixing these comes before any rewrite.
 
 Free space inside a table is different from dead tuples: after a plain `VACUUM`, dead tuples become free space that PostgreSQL reuses, but the file keeps its size. A rough estimate from statistics compares the table's size with its live rows:
 
@@ -89,7 +90,7 @@ SELECT c.relname,
        pg_size_pretty((c.reltuples * (28 + w.row_width))::bigint) AS est_live_size
   FROM pg_class c
   JOIN pg_namespace n ON n.oid = c.relnamespace
-  JOIN (SELECT schemaname, tablename, sum(avg_width) AS row_width
+  JOIN (SELECT schemaname, tablename, sum(avg_width * (1 - null_frac)) AS row_width
           FROM pg_stats WHERE NOT inherited GROUP BY 1, 2) w
     ON w.schemaname = n.nspname AND w.tablename = c.relname
  WHERE c.relkind = 'r' AND c.reltuples > 0
@@ -139,7 +140,7 @@ ALTER TABLE `my_table` FORCE, ALGORITHM=INPLACE, LOCK=NONE;
 
 - `ALGORITHM=INPLACE, LOCK=NONE` fails instead of locking the table when an online rebuild is not possible. `OPTIMIZE TABLE` falls back to a table copy that blocks writes when an online rebuild is not possible (for example with `FULLTEXT` indexes), so do not use it.
 - Tables with `FULLTEXT` or `SPATIAL` indexes cannot be rebuilt online. Check with `SELECT TABLE_NAME, INDEX_NAME, INDEX_TYPE FROM information_schema.STATISTICS WHERE INDEX_TYPE IN ('FULLTEXT', 'SPATIAL');`. Rebuilding them blocks writes: treat this like `VACUUM FULL` below.
-- An online rebuild still needs a brief metadata lock at its start and end. While it waits for that lock, for example behind a long query, new queries on the table wait too. A low `lock_wait_timeout` makes it fail instead.
+- An online rebuild still needs a brief metadata lock at its start and end. While it waits for that lock, for example behind a long query, new queries on the table wait too. A low `lock_wait_timeout` makes it fail instead. If the timeout is reached at the end, the rebuild fails after copying the whole table, and the work is lost. Before rebuilding a large table, check for long transactions and queries (`SHOW FULL PROCESSLIST;`, which shows only the user's own sessions without the `PROCESS` privilege), and do not retry a failed rebuild without telling the user why it failed.
 - A rebuild fails if concurrent writes exceed `innodb_online_alter_log_max_size`. Run it when write traffic is low.
 - After each table, check the disk again with `upsun disk` before the next one.
 
@@ -158,7 +159,7 @@ When available, `upsun db:mysql-optimize --execute` runs these rebuilds, smalles
   ```
 
   Pipe statements on stdin as above. `upsun sql "..."` runs multiple statements in one transaction, and `VACUUM` cannot run inside a transaction.
-- **Index bloat:** `REINDEX INDEX CONCURRENTLY my_index;` (PostgreSQL 12+) rebuilds an index without blocking reads or writes. It needs disk for a copy of the index. If it fails, it can leave an invalid index with a `_ccnew` or `_ccold` suffix, which must be dropped.
+- **Index bloat:** `REINDEX INDEX CONCURRENTLY my_index;` (PostgreSQL 12+) rebuilds an index without blocking reads or writes. It needs disk for a copy of the index, not of the table. Like `VACUUM`, it cannot run inside a transaction: run it alone in `upsun sql "..."`, or pipe it on stdin after `SET lock_timeout = '5s';` as above, since it still waits for locks held by long transactions. If it fails, it can leave an invalid index with a `_ccnew` or `_ccold` suffix, which must be dropped.
 - `pg_repack` and `pg_squeeze` are not available on Upsun.
 
 ## Report
