@@ -147,7 +147,7 @@ When available, `upsun db:mysql-optimize --execute` runs these rebuilds, smalles
 
 ## 6. Reclaim PostgreSQL space
 
-- **Plain `VACUUM`** (`VACUUM (VERBOSE, ANALYZE) my_table;`) does not block reads or writes. It makes dead tuples reusable, which stops the table from growing, but returns space to the disk only from empty pages at the end of the file. Run it first, and fix whatever blocks autovacuum.
+- **Plain `VACUUM`** (`VACUUM (VERBOSE, ANALYZE) my_table;`) does not block reads or writes. It makes dead tuples reusable, which stops the table from growing, but returns space to the disk only from empty pages at the end of the file. Run it first, and fix whatever blocks autovacuum. Truncating those pages takes a brief `ACCESS EXCLUSIVE` lock, only if it is free, and stops when other sessions wait for it. Replicas replay that lock, which can cancel their queries: with replicas, consider `VACUUM (VERBOSE, ANALYZE, TRUNCATE false) my_table;`, which frees no disk.
 - **`VACUUM FULL`** rewrites the table and its indexes and returns the space. It takes an `ACCESS EXCLUSIVE` lock, which blocks reads as well as writes for its whole duration, needs disk for a full copy, and its WAL is replayed on replicas. Use it only for small tables on a quiet site, with the user's explicit confirmation, and with a lock timeout so that it does not queue behind other sessions:
 
   ```bash
