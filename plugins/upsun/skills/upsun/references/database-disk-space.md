@@ -7,7 +7,7 @@ Run SQL with `upsun sql -p PROJECT_ID -e ENV_ID [-r RELATIONSHIP] "QUERY"`. It g
 ## Safety rules
 
 - Diagnose before proposing changes. Report sizes as estimates, with their source.
-- Get explicit confirmation before each statement that rewrites, locks, or deletes data: `ALTER TABLE`, `OPTIMIZE TABLE`, `VACUUM FULL`, `REINDEX`, `TRUNCATE`, `DELETE`, and `upsun db:mysql-optimize --execute`. Show the exact statement, the target environment, and the expected lock and disk use.
+- Get explicit confirmation before each statement that rewrites, locks, or deletes data, or changes statistics: `ALTER TABLE`, `OPTIMIZE TABLE`, `ANALYZE`, `VACUUM` (plain or `FULL`), `REINDEX`, `DROP INDEX`, `TRUNCATE`, `DELETE`, and `upsun db:mysql-optimize --execute`. Show the exact statement, the target environment, and the expected lock and disk use.
 - Try a rebuild on a preview environment first. Previews are cloned from the parent's storage, so they have the same files and fragmentation, and show how long a rebuild takes and how much it frees. Statistics views may be reset in a new preview.
 - Before a rebuild on production, check `upsun backup:list` and suggest `upsun backup:create --live` if there is no recent backup (see the skill's backup retention caveat).
 - Never run a rewrite on production without the user's explicit consent for that environment.
@@ -46,7 +46,7 @@ SELECT TABLE_SCHEMA, TABLE_NAME, ENGINE, TABLE_ROWS,
 Interpret these columns with care:
 
 - `DATA_FREE` counts only free extents (whole blocks of about 1 MiB) in the table's file. It misses space freed inside pages, so a table with most rows deleted can show a small `DATA_FREE` and still shrink a lot when rebuilt. Tables with many deletes or updates, such as logs and redirects, can have most of their file as free space.
-- `TABLE_ROWS` is an estimate for InnoDB, often off by 10–20%, and can be stale on small tables.
+- `TABLE_ROWS` is an estimate for InnoDB, which the MySQL manual says can be off by 40–50%, and can be stale on small tables.
 - MySQL 8 caches these statistics for `information_schema_stats_expiry` seconds (default 86400). Prefix the query with `SET SESSION information_schema_stats_expiry = 0;` to read current values (MariaDB has no such variable). `ANALYZE TABLE` refreshes them, but it changes the statistics used for query plans, so it is not a read-only command.
 
 To estimate space freed inside pages, compare the table's size with its live data: average row bytes from a sample of rows (sum of `LENGTH()` of each column), times `TABLE_ROWS`, times about 1.5 for InnoDB overhead. Treat the result as a rough figure. A sample of the first rows can be biased, and reading rows with large `BLOB` or `TEXT` values has a cost.
@@ -150,7 +150,7 @@ When available, `upsun db:mysql-optimize --execute` runs these rebuilds, smalles
 
 ## 6. Reclaim PostgreSQL space
 
-- **Plain `VACUUM`** (`VACUUM (VERBOSE, ANALYZE) my_table;`) does not block reads or writes. It makes dead tuples reusable, which stops the table from growing, but returns space to the disk only from empty pages at the end of the file. Run it first, and fix whatever blocks autovacuum. Truncating those pages takes a brief `ACCESS EXCLUSIVE` lock, only if it is free, and stops when other sessions wait for it. Replicas replay that lock, which can cancel their queries: with replicas, consider `VACUUM (VERBOSE, ANALYZE, TRUNCATE false) my_table;`, which frees no disk.
+- **Plain `VACUUM`** (`VACUUM (VERBOSE, ANALYZE) my_table;`) does not block reads or writes. It makes dead tuples reusable, which stops the table from growing, but returns space to the disk only from empty pages at the end of the file. Propose it first, and fix whatever blocks autovacuum. Truncating those pages takes a brief `ACCESS EXCLUSIVE` lock, only if it is free, and stops when other sessions wait for it. Replicas replay that lock, which can cancel their queries: with replicas, consider `VACUUM (VERBOSE, ANALYZE, TRUNCATE false) my_table;`, which frees no disk.
 - **`VACUUM FULL`** rewrites the table and its indexes and returns the space. It takes an `ACCESS EXCLUSIVE` lock, which blocks reads as well as writes for its whole duration, needs disk for a full copy, and its WAL is replayed on replicas. Use it only for small tables on a quiet site, with the user's explicit confirmation, and with a lock timeout so that it does not queue behind other sessions:
 
   ```bash
@@ -161,7 +161,7 @@ When available, `upsun db:mysql-optimize --execute` runs these rebuilds, smalles
   ```
 
   Pipe statements on stdin as above. `upsun sql "..."` runs multiple statements in one transaction, and `VACUUM` cannot run inside a transaction.
-- **Index bloat:** `REINDEX INDEX CONCURRENTLY my_index;` (PostgreSQL 12+) rebuilds an index without blocking reads or writes. It needs disk for a copy of the index, not of the table. Like `VACUUM`, it cannot run inside a transaction: run it alone in `upsun sql "..."`, or pipe it on stdin after `SET lock_timeout = '5s';` as above, since it still waits for locks held by long transactions. If it fails, it can leave an invalid index with a `_ccnew` or `_ccold` suffix, which must be dropped.
+- **Index bloat:** `REINDEX INDEX CONCURRENTLY my_index;` (PostgreSQL 12+) rebuilds an index without blocking reads or writes. It needs disk for a copy of the index, not of the table. Like `VACUUM`, it cannot run inside a transaction: run it alone in `upsun sql "..."`, or pipe it on stdin after `SET lock_timeout = '5s';` as above, since it still waits for locks held by long transactions. If it fails, it can leave an invalid index with a `_ccnew` or `_ccold` suffix, which must be dropped with `DROP INDEX CONCURRENTLY index_name;` (also outside a transaction, and with confirmation). A plain `DROP INDEX` locks the table against reads and writes.
 - `pg_repack` and `pg_squeeze` are not available on Upsun.
 
 ## Report

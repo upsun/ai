@@ -241,7 +241,7 @@ Show the exact CLI command and wait for explicit confirmation before running:
 - `upsun variable:create`, `upsun variable:update`, `upsun variable:delete`
 - `upsun domain:add`, `upsun domain:delete`
 - `upsun integration:add`, `upsun integration:delete`
-- `upsun db:mysql-optimize --execute`, and SQL that rewrites, locks, or empties tables (`ALTER TABLE`, `OPTIMIZE TABLE`, `VACUUM FULL`, `REINDEX`, `TRUNCATE`)
+- `upsun db:mysql-optimize --execute`, and SQL that rewrites, locks, or empties tables or changes their statistics (`ALTER TABLE`, `OPTIMIZE TABLE`, `ANALYZE`, `VACUUM`, `REINDEX`, `DROP INDEX`, `TRUNCATE`)
 
 Read-only operations (`list`, `info`, `get`, `log`) and specific read-only SSH log commands scoped as described above do not require write confirmation. This does not preapprove general SSH access or bypass the host tool's permission checks. Production access still follows [the SSH guidance](#prefer-preview-environments-for-development), including commands that use SSH internally.
 
