@@ -71,16 +71,17 @@ SELECT s.schemaname, s.relname,
 `pg_total_relation_size` includes indexes and TOAST data. Many dead tuples and an old or empty `last_autovacuum` mean autovacuum is not keeping up, or is blocked. Check for what holds back cleanup:
 
 ```sql
-SELECT pid, usename, state, now() - xact_start AS xact_age, left(query, 60) AS query
+SELECT pid, usename, state, age(backend_xmin) AS xmin_age,
+       now() - xact_start AS xact_age, left(query, 60) AS query
   FROM pg_stat_activity
- WHERE backend_type = 'client backend'
- ORDER BY xact_start NULLS LAST
+ WHERE backend_xmin IS NOT NULL OR backend_xid IS NOT NULL
+ ORDER BY greatest(age(backend_xmin), age(backend_xid)) DESC
  LIMIT 10;
 SELECT slot_name, active, age(xmin) AS xmin_age, age(catalog_xmin) AS catalog_xmin_age
   FROM pg_replication_slots;
 ```
 
-Long-running or `idle in transaction` sessions prevent vacuum from removing dead tuples. Without superuser or `pg_read_all_stats` privileges, other roles' sessions show `<insufficient privilege>` and no `xact_start`: if such rows appear, repeat the query with an endpoint with `admin` privileges before concluding that nothing blocks vacuum. A replication slot with an old `xmin` (a large `xmin_age`) also holds back cleanup of all tables; an old `catalog_xmin` holds back only system catalogs. A slot with neither does not block vacuum. Fixing these comes before any rewrite.
+Long-running or `idle in transaction` sessions prevent vacuum from removing dead tuples; the oldest are listed first, with the largest `xmin_age`. Without superuser or `pg_read_all_stats` privileges, other roles' sessions show `<insufficient privilege>` and no `state` or `xact_start`, but still show their `xmin_age`: to see what they run, repeat the query with an endpoint with `admin` privileges. A replication slot with an old `xmin` (a large `xmin_age`) also holds back cleanup of all tables; an old `catalog_xmin` holds back only system catalogs. A slot with neither does not block vacuum. Fixing these comes before any rewrite.
 
 Free space inside a table is different from dead tuples: after a plain `VACUUM`, dead tuples become free space that PostgreSQL reuses, but the file keeps its size. A rough estimate from statistics compares the table's size with its live rows:
 
